@@ -14,4 +14,4 @@ public class MainActivity extends AppCompatActivity {
 }
 
 //this is a github commit test
-//git test 2
+//git test 2.2
