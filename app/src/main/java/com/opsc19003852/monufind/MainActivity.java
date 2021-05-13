@@ -15,4 +15,4 @@ public class MainActivity extends AppCompatActivity {
 
 //this is a github commit test
 //git test 2.2
-// Nebbz has big winky
+// Nebbz has not big winky
