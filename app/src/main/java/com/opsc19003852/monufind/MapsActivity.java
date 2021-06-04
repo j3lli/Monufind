@@ -95,6 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
                     //execute our method for searching
                     geoLocate();
+                    //changes have occurred
                 }
                 return false;
             }
