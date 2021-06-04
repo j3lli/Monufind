@@ -41,5 +41,5 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:27.1.0')
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
-    //implementation 'com.google.android.gms:play-services:11.0.4'
+
 }
