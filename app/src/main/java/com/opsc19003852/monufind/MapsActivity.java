@@ -24,7 +24,28 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-public class MapsActivity extends FragmentActivity {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
+        mMap = googleMap;
+        Log.d(TAG, "onMapReady: map is ready here");
+
+        if (mLocationPermissionsGranted) {
+            getDeviceLocation();
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            mMap.setMyLocationEnabled(true);
+
+
+        }
+    }
+
 
     private static final String TAG = "MapActivity";
 
@@ -89,27 +110,7 @@ public class MapsActivity extends FragmentActivity {
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                Toast.makeText(MapsActivity.this, "Map is Ready", Toast.LENGTH_SHORT).show();
-                mMap = googleMap;
-                Log.d(TAG, "onMapReady: map is ready here");
-
-                if (mLocationPermissionsGranted) {
-                    getDeviceLocation();
-
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    }
-                    mMap.setMyLocationEnabled(true);
-
-
-                }
-            }
-        });
+        mapFragment.getMapAsync(MapsActivity.this);
     }
 
     private void getLocationPermission(){
@@ -158,4 +159,6 @@ public class MapsActivity extends FragmentActivity {
             }
         }
     }
+
+
 }
