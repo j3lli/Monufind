@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegistrationActivity">
+    tools:context=".LoginActivity">
 
     <TextView
         android:id="@+id/tvUsername"
@@ -42,7 +42,8 @@
         app:layout_constraintHorizontal_bias="0.162"
         app:layout_constraintStart_toEndOf="@+id/tvUsername"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.31" />
+        app:layout_constraintVertical_bias="0.31"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/etPassword"
@@ -56,7 +57,8 @@
         app:layout_constraintHorizontal_bias="0.162"
         app:layout_constraintStart_toEndOf="@+id/tvPassword"
         app:layout_constraintTop_toBottomOf="@+id/etUsername"
-        app:layout_constraintVertical_bias="0.016" />
+        app:layout_constraintVertical_bias="0.016"
+        android:autofillHints="" />
 
     <Button
         android:id="@+id/btnLogin"
@@ -65,10 +67,8 @@
         android:text="@string/login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnReg"
-        app:layout_constraintVertical_bias="0.051" />
+        app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
     <Button
         android:id="@+id/btnReg"
@@ -78,8 +78,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etPassword"
-        app:layout_constraintVertical_bias="0.402" />
+        app:layout_constraintTop_toBottomOf="@+id/btnLogin"
+        app:layout_constraintVertical_bias="0.123" />
 
     <TextView
         android:id="@+id/tvAppName"

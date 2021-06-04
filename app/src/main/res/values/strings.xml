@@ -4,29 +4,5 @@
     <string name="username">Username</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
-    <string name="title_activity_registration">RegistrationActivity</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="title_activity_register">RegisterActivity</string>
-    <string name="registration">Registration</string>
-    <string name="full_name">Full Name</string>
-    <string name="already_registered_login_here">Already Registered? Login here</string>
-    <string name="email">Email</string>
-    <string name="new_to_monofind_register_here">New to Monofind? Register Here</string>
-    <string name="Kms">Kms</string>
-    <string name="Miles">Miles</string>
-    <string name="choose_a_preferred_landmark_type">Choose a preferred landmark type</string>
-    <string-array name="landmark_types">
-        <item>Historical</item>
-        <item>Sports</item>
-        <item>Entertainment</item>
-        <item>Food</item>
-    </string-array>
 
 </resources>
