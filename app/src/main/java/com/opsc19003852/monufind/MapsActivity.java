@@ -70,9 +70,12 @@ public class MapsActivity extends FragmentActivity {
                 mLocationPermissionsGranted=true;
 
             }else {
-                ActivityCompat.requestPermissions(this,permissions,
+                ActivityCompat.requestPermissions(this, permissions,
                         LOCATION_PERMISSION_REQUEST_CODE);
             }
+            }else {
+                ActivityCompat.requestPermissions(this,permissions,
+                        LOCATION_PERMISSION_REQUEST_CODE);
 
         }
     }
