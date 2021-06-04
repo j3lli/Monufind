@@ -14,8 +14,11 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //widgets
     private EditText mSearchText;
+    private ImageView mGps;
 
     //vars
     private Boolean mLocationPermissionsGranted = false;
@@ -79,6 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         mSearchText = (EditText) findViewById(R.id.input_search);
+        mGps= (ImageView) findViewById(R.id.ic_gps);
 
         getLocationPermission();
     }
@@ -99,6 +104,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+
+        mGps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: clicked gps icon");
+                getDeviceLocation();
+            }
+        });
+
+        HideSoftKeyboard();
     }
 
     private void geoLocate(){
@@ -117,6 +132,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(list.size() > 0){
             Address address = list.get(0);
             Log.d(TAG, "geoLocate: found a location" + address.toString());
+
+           moveCamera(new LatLng(address.getLatitude(),address.getLongitude()),DEFAULT_ZOOM,address.getAddressLine(0));
+            /*MarkerOptions options = new MarkerOptions().position(new LatLng(address.getLatitude(),address.getLongitude())).title(address.getAddressLine(0));
+            mMap.addMarker(options);*/
         }
     }
 
@@ -136,16 +155,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Log.d(TAG, "onComplete: found location");
                             Location currentLocation = (Location) task.getResult();
 
-                            CameraPosition cameraPosition = CameraPosition.builder()
+                           /* CameraPosition cameraPosition = CameraPosition.builder()
                             .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
                             .zoom(DEFAULT_ZOOM)
                             .bearing(0)
                             .tilt(0)
                             .build();
-                            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
 
-                            /*moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                    DEFAULT_ZOOM);*/
+                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                    DEFAULT_ZOOM,"My Location");
                         } else {
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
@@ -159,9 +178,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void moveCamera(LatLng latLng, float zoom) {
+    private void moveCamera(LatLng latLng, float zoom, String title) {
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        if (!title.equals("My Location")){
+            MarkerOptions options = new MarkerOptions().position(latLng).title(title);
+            mMap.addMarker(options);
+        }
+
+        HideSoftKeyboard();
+
+
     }
 
     private void initMap() {
@@ -218,5 +246,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void HideSoftKeyboard(){
+        //doesnt work
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
 
 }
