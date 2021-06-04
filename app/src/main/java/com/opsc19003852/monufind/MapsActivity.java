@@ -55,6 +55,7 @@ public class MapsActivity extends FragmentActivity {
 
 
     private void initMap(){
+        Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment =(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -62,12 +63,13 @@ public class MapsActivity extends FragmentActivity {
             public void onMapReady(GoogleMap googleMap) {
                 Toast.makeText(MapsActivity.this, "Map is Ready", Toast.LENGTH_SHORT).show();
                 mMap= googleMap;
-
+                Log.d(TAG, "onMapReady: map is ready here");
             }
         });
     }
 
     private void getLocationPermission(){
+        Log.d(TAG, "getLocationPermission: Getting location perm");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION};
 
@@ -87,6 +89,7 @@ public class MapsActivity extends FragmentActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: called");
         mLocationPermissionsGranted=false;
 
         switch(requestCode){
@@ -95,10 +98,12 @@ public class MapsActivity extends FragmentActivity {
                     for (int i =0; i<grantResults.length;i++){
                         if (grantResults[i]!=PackageManager.PERMISSION_GRANTED){
                             mLocationPermissionsGranted=false;
+                            Log.d(TAG, "onRequestPermissionsResult: perm failed");
                             return;
                         }
 
                     }
+                    Log.d(TAG, "onRequestPermissionsResult: Perm greanted");
                     mLocationPermissionsGranted=true;
 
                     initMap();
