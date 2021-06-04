@@ -3,6 +3,8 @@ package com.opsc19003852.monufind;
 import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +30,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     //using thr onMapReadyCallback to generate a map once the user agrees
@@ -48,6 +54,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
             gMap.setMyLocationEnabled(true);
             gMap.getUiSettings().setMyLocationButtonEnabled(false);
+
+            init();
         }
     }
 
@@ -92,10 +100,35 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         || event.getAction() == event.ACTION_DOWN
                         || event.getAction() == event.KEYCODE_ENTER){
 
+                    //execute the search method
+                    geoLocate();
+
                 }
                 return false;
             }
         });
+    }
+
+    //the geolocation method
+    private void geoLocate(){
+        Log.d(TAG, "geoLocate: using the geo-location service!");
+
+        String searchString = etSearchText.getText().toString();
+
+        Geocoder geocoder = new Geocoder(MapActivity.this);
+        List<Address> addrList = new ArrayList<>();
+
+        try{
+            addrList = geocoder.getFromLocationName(searchString, 1);
+        }catch(IOException e){
+            Log.e(TAG,"geoLocate: IOException" + e.getMessage());
+        }
+        if(addrList.size() > 0){
+            Address address = addrList.get(0);
+
+            Log.d(TAG, "geoLocate: found a location: " + address.toString());
+            //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     //getting the devices location
