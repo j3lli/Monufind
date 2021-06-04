@@ -6,6 +6,7 @@
     <string name="register">Register</string>
     <string name="stuff">stuff</string>
     <string name="title_activity_maps">Map</string>
+    <string name="google_maps_key">AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU</string>
 
 
 </resources>
