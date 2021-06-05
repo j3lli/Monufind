@@ -31,16 +31,16 @@
             android:src="@drawable/ic_magnify"/>
 
         <EditText
+            android:id="@+id/input_search"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@id/ic_magnify"
             android:layout_centerVertical="true"
-            android:textSize="15sp"
-            android:textColor="#000"
-            android:id="@+id/input_search"
+            android:layout_toRightOf="@id/ic_magnify"
             android:background="@null"
-            android:hint="Enter Address, City or Zip Code"
-            android:imeOptions="actionSearch"/>
+            android:hint="@string/Search_bar_hint"
+            android:imeOptions="actionSearch"
+            android:textColor="#000"
+            android:textSize="15sp" />
     </RelativeLayout>
 
     <ImageView
@@ -52,7 +52,7 @@
         android:layout_marginTop="10dp"
         android:scaleType="centerCrop"
         android:id="@+id/ic_gps"
-        android:src="@mipmap/ic_gps"/>
+        android:src="@drawable/ic_gps"/>
 
 
 </RelativeLayout>
