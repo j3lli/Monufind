@@ -30,9 +30,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,6 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Marker mMarker;
 
 
     @Override
@@ -133,9 +137,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Address address = list.get(0);
             Log.d(TAG, "geoLocate: found a location" + address.toString());
 
-           moveCamera(new LatLng(address.getLatitude(),address.getLongitude()),DEFAULT_ZOOM,address.getAddressLine(0));
+           moveCamera(new LatLng(address.getLatitude(),address.getLongitude()),DEFAULT_ZOOM,address);
             /*MarkerOptions options = new MarkerOptions().position(new LatLng(address.getLatitude(),address.getLongitude())).title(address.getAddressLine(0));
             mMap.addMarker(options);*/
+
+
+
         }
     }
 
@@ -176,6 +183,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (SecurityException e) {
             Log.d(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
         }
+    }
+
+    private void moveCamera(LatLng latLng, float zoom, Address address) {
+        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        mMap.clear();
+
+        if (address != null) {
+            try {
+                String snippet = "Address: " + address.getAddressLine(0) + "\n" +
+                        "Phone Number: " + address.getPhone() + "\n" +
+                        "Website: " + address.getUrl() + "\n";
+                // "Price Rating: "+address.getRating(0)+"\n";
+                Log.d(TAG, "moveCamera: snippet"+snippet);
+                //    Phone Number: null
+                //    Website: null
+
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .title(address.getFeatureName())
+                        .snippet(snippet);
+                mMarker = mMap.addMarker(options);
+
+
+            } catch (NullPointerException e) {
+                Log.d(TAG, "moveCamera: NullPointerException: " + e.getMessage());
+            }
+        }else
+        {
+            mMap.addMarker(new MarkerOptions().position(latLng));
+        }
+
+
+        HideSoftKeyboard();
+
+
     }
 
     private void moveCamera(LatLng latLng, float zoom, String title) {
