@@ -23,7 +23,7 @@
         android:text="@string/full_name" />
 
     <EditText
-        android:id="@+id/txtName"
+        android:id="@+id/edtFullName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
@@ -34,10 +34,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
-        android:text="@string/username" />
+        android:text="Email" />
 
     <EditText
-        android:id="@+id/txtEmail"
+        android:id="@+id/edtUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
@@ -51,7 +51,7 @@
         android:text="@string/password" />
 
     <EditText
-        android:id="@+id/txtPwd"
+        android:id="@+id/edtPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
@@ -103,7 +103,7 @@
 
 
     <Button
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
