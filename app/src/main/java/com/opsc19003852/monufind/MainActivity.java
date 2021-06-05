@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     EditText mUsername, mPassword;
     Button mLoginbtn;
     FirebaseAuth fAuth;
+    TextView register;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +32,9 @@ public class MainActivity extends AppCompatActivity {
         mPassword=findViewById(R.id.edtPassword);
         mUsername=findViewById(R.id.edtUsername);
         mPassword=findViewById(R.id.edtPassword);
-        mLoginbtn=findViewById(R.id.btnRegister);
+        mLoginbtn=findViewById(R.id.btnLogin);
         fAuth=FirebaseAuth.getInstance();
-        TextView register = (TextView)findViewById(R.id.lnkRegister);
-        register.setMovementMethod(LinkMovementMethod.getInstance());
+         register= findViewById(R.id.lnkRegister);
 
         mLoginbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,9 +75,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(getApplicationContext(), RegistrationActivity.class));
             }
         });
+
     }
+
 }

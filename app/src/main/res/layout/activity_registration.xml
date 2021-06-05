@@ -66,7 +66,7 @@
         android:text="Choose either the Imperial or Metric system"
         />
     <RadioGroup
-        android:id="@+id/myRadioGroup"
+        android:id="@+id/rgUnits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/text"
@@ -74,16 +74,16 @@
         android:checkedButton="@+id/sound">
 
         <RadioButton
-            android:id="@+id/Kms"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Kms" />
-
-        <RadioButton
             android:id="@+id/Miles"
             android:layout_width="119dp"
             android:layout_height="wrap_content"
             android:text="@string/Miles" />
+
+        <RadioButton
+            android:id="@+id/Kms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Kms" />
 
     </RadioGroup>
     <TextView
@@ -94,7 +94,7 @@
         android:text="@string/choose_a_preferred_landmark_type"
         />
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/spnLandmark"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:drawSelectorOnTop="true"
@@ -103,7 +103,7 @@
 
 
     <Button
-        android:id="@+id/btnRegister"
+        android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -118,4 +118,5 @@
         android:text="@string/already_registered_login_here"
         android:textColor="#3F51B5"
         android:textSize="20sp" />
+
 </LinearLayout>
