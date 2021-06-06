@@ -130,8 +130,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getDeviceLocation();
             }
         });
-
-        HideSoftKeyboard();
     }
 
     private void geoLocate(){
@@ -236,9 +234,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-        HideSoftKeyboard();
-
-
     }
 
     //moves camera to users location
@@ -251,7 +246,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(options);
         }
 
-        HideSoftKeyboard();
+
 
 
     }
@@ -308,32 +303,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         }
-    }
-
-    private void HideSoftKeyboard(){
-
-        //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        // hide virtual keyboard
-       /* EditText textInput = (EditText) findViewById(R.id.input_search);
-        textInput.setOnKeyListener(new View.OnKeyListener()
-        {
-            /**
-             * This listens for the user to press the enter button on
-             * the keyboard and then hides the virtual keyboard
-
-            public boolean onKey(View arg0, int arg1, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if ( (event.getAction() == KeyEvent.ACTION_DOWN  ) &&
-                        (arg1           == KeyEvent.KEYCODE_ENTER)   )
-                {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(textInput.getWindowToken(), 0);
-                    return true;
-                }
-                return false;
-            }
-        } );*/
-
     }
 
 }
