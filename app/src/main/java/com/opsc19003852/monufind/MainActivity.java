@@ -15,8 +15,8 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 public class MainActivity extends AppCompatActivity {
 
+    //context string and error string
     private static final String TAG = "MainActivity";
-
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
     @Override
@@ -24,12 +24,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(isServicesOK()){
+        //checking the google play service version to ensure that the
+        //device is able to use map services
+        if (checkServiceVersion()) {
             init();
         }
     }
 
-    private void init(){
+    //initialization method
+    private void init() {
         Button btnMap = (Button) findViewById(R.id.btnMap);
         btnMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,22 +43,31 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public boolean isServicesOK(){
-        Log.d(TAG, "isServicesOK: checking google services version");
+    //boolean method that validates if a user has the correct play services
+    //to run the map service (this is a requirements as per googles' documentation)
+    public boolean checkServiceVersion() {
+        Log.d(TAG, "checkServiceVersion: checking google services version!");
 
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
+        int available = GoogleApiAvailability.getInstance()
+                .isGooglePlayServicesAvailable(MainActivity.this);
 
-        if(available == ConnectionResult.SUCCESS){
-            //everything is fine and the user can make map requests
-            Log.d(TAG, "isServiceOK: Google Play Service is Working");
+        //if the connection service happens, then the user can use the map
+        if (available == ConnectionResult.SUCCESS) {
+            Log.d(TAG, "checkServiceVersion: google play services are up to date!");
             return true;
-        }else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-            //an error occurred but we can fix it
-            Log.d(TAG, "isServiceOK: and error occurred");
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
+        }
+        //if the connection service experiences a resolvable error, resolve it and retry
+        else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
+            Log.d(TAG, "checkServiceVersion: and error occurred, but it is resolvable!");
+
+            //generating an error dialog
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this,
+                    available, ERROR_DIALOG_REQUEST);
             dialog.show();
-        }else{
-            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
+        }
+        //if the connection service experiences a fatal error
+        else {
+            Toast.makeText(this, "your device is unable to make map requests!", Toast.LENGTH_SHORT).show();
         }
         return false;
     }
