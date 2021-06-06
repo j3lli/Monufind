@@ -44,6 +44,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
@@ -91,6 +92,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Marker mMarker;
+    private   String apiKey="AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU";
 
 
     @Override
@@ -101,6 +103,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGps= (ImageView) findViewById(R.id.ic_gps);
 
         getLocationPermission();
+
+
+        Places.initialize(getApplicationContext(),apiKey);
+
+        PlacesClient placesClient = Places.createClient(this);
+
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        autocompleteFragment.setTypeFilter(TypeFilter.ADDRESS);
+
+        autocompleteFragment.setLocationBias(RectangularBounds.newInstance(
+                new LatLng(-33.880490,151.184363),
+                new LatLng(-33.858754, 151.229596)));
+
+        autocompleteFragment.setCountries("ZA");
+
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
     }
 
     private void init(){
