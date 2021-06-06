@@ -1,12 +1,13 @@
 package com.opsc19003852.monufind;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -17,37 +18,49 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    //using the onMapReadyCallback to generate a map once the user agrees
-    //to all permissions
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(this, "Map is Ready!", Toast.LENGTH_SHORT).show();
-        gMap = googleMap;
-        Log.d(TAG, "onMapReady: map is ready!");
+        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
+        mMap = googleMap;
+        Log.d(TAG, "onMapReady: map is ready here");
 
-        if (locationPermissionGranted) {
+        if (mLocationPermissionsGranted) {
             getDeviceLocation();
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -55,9 +68,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
-            gMap.setMyLocationEnabled(true);
-            gMap.getUiSettings().setMyLocationButtonEnabled(false);
-
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
             init();
         }
     }
@@ -65,7 +77,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final String TAG = "MapActivity";
 
-    //variables used when explicitly checking user permissions
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
@@ -75,14 +86,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private EditText mSearchText;
     private ImageView mGps;
 
-    //user location permission flag
-    private boolean locationPermissionGranted = false;
-
-    //map object
-    private GoogleMap gMap;
-
-    //location provider
-    private FusedLocationProviderClient fusedLPClient;
+    //vars
+    private Boolean mLocationPermissionsGranted = false;
+    private GoogleMap mMap;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
     private Marker mMarker;
 
 
@@ -91,91 +98,100 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         mSearchText = (EditText) findViewById(R.id.input_search);
-        mGps = (ImageView) findViewById(R.id.ic_gps);
+        mGps= (ImageView) findViewById(R.id.ic_gps);
 
         getLocationPermission();
     }
 
-    //initialization method
-    private void init() {
-        Log.d(TAG, "init: initializing!");
+    private void init(){
+        Log.d(TAG, "init: initializing");
 
-        //setting the action listener for the search bar
         mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textview, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH
+                if(actionId == EditorInfo.IME_ACTION_SEARCH
                         || actionId == EditorInfo.IME_ACTION_DONE
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
-                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER) {
-                    //execute the search method
+                        || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
+                    //Hides keyboard after enter
+                    InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mSearchText.getWindowToken(), 0);
+                    //execute our method for searching
                     geoLocate();
                 }
                 return false;
             }
         });
 
-        //setting the gps button on click listener
         mGps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: clicked gps icon!");
+                Log.d(TAG, "onClick: clicked gps icon");
                 getDeviceLocation();
             }
         });
 
-        //hiding the keyboard
         HideSoftKeyboard();
     }
 
-    //the geoLocation method
-    private void geoLocate() {
-        Log.d(TAG, "geoLocate: using the geo-location service!");
+    private void geoLocate(){
+        Log.d(TAG, "geoLocate: geolocating");
 
         String searchString = mSearchText.getText().toString();
 
         Geocoder geocoder = new Geocoder(MapsActivity.this);
-        List<Address> addrList = new ArrayList<>();
-        try {
-            addrList = geocoder.getFromLocationName(searchString, 1);
-        } catch (IOException e) {
-            Log.e(TAG, "geoLocate: IOException: " + e.getMessage());
+        List<Address> list = new ArrayList<>();
+        try{
+            list = geocoder.getFromLocationName(searchString, 1);
+        }catch (IOException e){
+            Log.e(TAG, "geoLocate: IOException: " + e.getMessage() );
         }
 
-        if (addrList.size() > 0) {
-            Address address = addrList.get(0);
+        if(list.size() > 0){
+            Address address = list.get(0);
             Log.d(TAG, "geoLocate: found a location" + address.toString());
 
-            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address);
+           moveCameraS(new LatLng(address.getLatitude(),address.getLongitude()),DEFAULT_ZOOM,address);
             /*MarkerOptions options = new MarkerOptions().position(new LatLng(address.getLatitude(),address.getLongitude())).title(address.getAddressLine(0));
             mMap.addMarker(options);*/
 
 
+
         }
+
+
+
+
     }
 
-    //getting the devices location
     private void getDeviceLocation() {
-        Log.d(TAG, "getDeviceLocation: getting the devices current location!");
+        Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
-        fusedLPClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         try {
-            if (locationPermissionGranted) {
+            if (mLocationPermissionsGranted) {
 
-                Task location = fusedLPClient.getLastLocation();
+                Task location = mFusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "onComplete: found location!");
+                            Log.d(TAG, "onComplete: found location");
                             Location currentLocation = (Location) task.getResult();
 
-                            //moving the camera object to centre over a user's location
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-                                    DEFAULT_ZOOM, "My Location");
+                           /* CameraPosition cameraPosition = CameraPosition.builder()
+                            .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
+                            .zoom(DEFAULT_ZOOM)
+                            .bearing(0)
+                            .tilt(0)
+                            .build();
+                            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
+
+                            moveCameraU(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                                    DEFAULT_ZOOM,"My Location");
                         } else {
-                            Log.d(TAG, "onComplete: current location is null!");
+                            Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -187,12 +203,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
-    private void moveCamera(LatLng latLng, float zoom, Address address) {
+    //moves camera to searched location
+    private void moveCameraS(LatLng latLng, float zoom, Address address) {
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
-        gMap.clear();
+        mMap.clear();
 
         if (address != null) {
             try {
@@ -200,106 +216,124 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         "Phone Number: " + address.getPhone() + "\n" +
                         "Website: " + address.getUrl() + "\n";
                 // "Price Rating: "+address.getRating(0)+"\n";
-                Log.d(TAG, "moveCamera: snippet" + snippet);
+                Log.d(TAG, "moveCamera: snippet"+snippet);
                 //    Phone Number: null
                 //    Website: null
 
-                //adding a marker to the map
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
                         .title(address.getFeatureName())
                         .snippet(snippet);
-                mMarker = gMap.addMarker(options);
+                mMarker = mMap.addMarker(options);
+
 
             } catch (NullPointerException e) {
                 Log.d(TAG, "moveCamera: NullPointerException: " + e.getMessage());
             }
-        } else {
-            gMap.addMarker(new MarkerOptions().position(latLng));
+        }else
+        {
+            mMap.addMarker(new MarkerOptions().position(latLng));
         }
 
+
         HideSoftKeyboard();
+
+
     }
 
-    //method to move the camera (view window of the map)
-    private void moveCamera(LatLng latLng, float zoom, String title) {
+    //moves camera to users location
+    private void moveCameraU(LatLng latLng, float zoom, String title) {
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
-        if (!title.equals("My Location")) {
+        if (!title.equals("My Location")){
             MarkerOptions options = new MarkerOptions().position(latLng).title(title);
-            gMap.addMarker(options);
+            mMap.addMarker(options);
         }
 
         HideSoftKeyboard();
+
+
     }
 
-    //initializing the map
     private void initMap() {
         Log.d(TAG, "initMap: initializing map");
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        //using the callback super to generate the map
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
         mapFragment.getMapAsync(MapsActivity.this);
     }
 
-    //checking user permissions
-    private void getLocationPermission() {
-        Log.d(TAG, "getLocationPermission: getting location permissions!");
+    private void getLocationPermission(){
+        Log.d(TAG, "getLocationPermission: Getting location perm");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION};
 
-        //checking if permission has been granted for fine location
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            //checking if permission has been granted for course location
-            if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                locationPermissionGranted = true;
+        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                mLocationPermissionsGranted=true;
                 initMap();
-            } else {
+            }else {
                 ActivityCompat.requestPermissions(this, permissions,
                         LOCATION_PERMISSION_REQUEST_CODE);
             }
-        } else {
-            ActivityCompat.requestPermissions(this, permissions,
-                    LOCATION_PERMISSION_REQUEST_CODE);
+            }else {
+                ActivityCompat.requestPermissions(this,permissions,
+                        LOCATION_PERMISSION_REQUEST_CODE);
+
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-            @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult: called");
+        mLocationPermissionsGranted=false;
 
-        Log.d(TAG, "onRequestPermissionsResult: has been called");
-        locationPermissionGranted = false;
-
-        switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
-                //if the first permission has been granted
-                if (grantResults.length > 0) {
-                    //looping through all of the grant results
-                    for (int i = 0; i < grantResults.length; i++) {
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                            locationPermissionGranted = false;
+        switch(requestCode){
+            case LOCATION_PERMISSION_REQUEST_CODE:{
+                if(grantResults.length>0 ){
+                    for (int i =0; i<grantResults.length;i++){
+                        if (grantResults[i]!=PackageManager.PERMISSION_GRANTED){
+                            mLocationPermissionsGranted=false;
                             Log.d(TAG, "onRequestPermissionsResult: perm failed");
                             return;
                         }
+
                     }
                     Log.d(TAG, "onRequestPermissionsResult: Perm granted");
-                    locationPermissionGranted = true;
-                    //initialize the map
+                    mLocationPermissionsGranted=true;
+
                     initMap();
                 }
             }
         }
     }
 
-    //method to hide the keyboard
-    private void HideSoftKeyboard() {
-        //doesnt work
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    private void HideSoftKeyboard(){
+
+        //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        // hide virtual keyboard
+       /* EditText textInput = (EditText) findViewById(R.id.input_search);
+        textInput.setOnKeyListener(new View.OnKeyListener()
+        {
+            /**
+             * This listens for the user to press the enter button on
+             * the keyboard and then hides the virtual keyboard
+
+            public boolean onKey(View arg0, int arg1, KeyEvent event) {
+                // If the event is a key-down event on the "enter" button
+                if ( (event.getAction() == KeyEvent.ACTION_DOWN  ) &&
+                        (arg1           == KeyEvent.KEYCODE_ENTER)   )
+                {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(textInput.getWindowToken(), 0);
+                    return true;
+                }
+                return false;
+            }
+        } );*/
+
     }
 
 }
