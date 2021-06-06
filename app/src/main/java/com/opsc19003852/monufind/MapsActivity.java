@@ -7,7 +7,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -27,6 +29,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -36,6 +40,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -91,12 +96,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 16f;
+    private static final int PLACE_PICKER_REQUEST = 1;
     private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
             new LatLng(-40, -168), new LatLng(71, 136));
 
     //widgets
     private AutoCompleteTextView mSearchText;
-    private ImageView mGps, mInfo;
+    private ImageView mGps, mInfo, mPlacePicker;
 
 
     //vars
@@ -109,7 +115,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker mMarker;
     private String apiKey = "AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
         mGps = (ImageView) findViewById(R.id.ic_gps);
         mInfo = (ImageView) findViewById(R.id.place_info);
+        mPlacePicker = (ImageView) findViewById(R.id.place_picker);
 
         getLocationPermission();
 
@@ -163,23 +169,52 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getDeviceLocation();
             }
         });
-        
+
         mInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: clicked place info");
                 try {
-                    if (mMarker.isInfoWindowShown()){
+                    if (mMarker.isInfoWindowShown()) {
                         mMarker.hideInfoWindow();
-                    }else{
-                        Log.d(TAG, "onClick: Place info: "+mPlace.toString());
+                    } else {
+                        Log.d(TAG, "onClick: Place info: " + mPlace.toString());
                         mMarker.showInfoWindow();
                     }
-                }catch (NullPointerException e){
-                    Log.d(TAG, "onClick: NullPointerException: "+e.getMessage());
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "onClick: NullPointerException: " + e.getMessage());
                 }
             }
         });
+
+        mPlacePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+                try {
+                    startActivityForResult(builder.build(MapsActivity.this), PLACE_PICKER_REQUEST);
+                } catch (GooglePlayServicesRepairableException e) {
+                    Log.e(TAG, "onClick: GooglePlayServicesRepairableException: " + e.getMessage());
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    Log.e(TAG, "onClick: GooglePlayServicesNotAvailableException: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    //might throw an error
+    @SuppressLint("MissingSuperCall")
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(this, data);
+
+                PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
+                        .getPlaceById(mGoogleApiClient, place.getId());
+                placeResult.setResultCallback(mUpdatePlaceDetailsCallback);
+            }
+        }
     }
 
     private void geoLocate() {
@@ -261,8 +296,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 String snippet = "Address: " + placeInfo.getAddress() + "\n" +
                         "Phone Number: " + placeInfo.getPhoneNumber() + "\n" +
-                        "Website: " + placeInfo.getWebsiteUri() + "\n"+
-                         "Price Rating: "+placeInfo.getRating()+"\n";
+                        "Website: " + placeInfo.getWebsiteUri() + "\n" +
+                        "Price Rating: " + placeInfo.getRating() + "\n";
                 Log.d(TAG, "moveCamera: snippet" + snippet);
 
 
@@ -378,7 +413,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             Log.d(TAG, "onResult: Place details: " + place.getAddress());
 
-            try{
+            try {
                 //mPlace.setAttributions(place.getAttributions().toString());
                 mPlace = new PlaceInfo();
                 mPlace.setName(place.getName().toString());
@@ -389,8 +424,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mPlace.setWebsiteUri(place.getWebsiteUri());
 
                 Log.d(TAG, "onResult: place: " + mPlace.toString());
-            }
-            catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 Log.e(TAG, "onResult: NullPointerException: " + e.getMessage());
             }
 
