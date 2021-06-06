@@ -255,6 +255,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.clear();
 
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(MapsActivity.this));
+
         if (placeInfo != null) {
             try {
                 String snippet = "Address: " + placeInfo.getAddress() + "\n" +
@@ -349,6 +351,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     //============================ GOOGLE PLACES API AUTOCOMPLETE SUGGESTIONS ==================
+
     private AdapterView.OnItemClickListener mAutoCompleteClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -372,6 +375,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return;
             }
             final Place place = places.get(0);
+
+            Log.d(TAG, "onResult: Place details: " + place.getAddress());
 
             try{
                 //mPlace.setAttributions(place.getAttributions().toString());
