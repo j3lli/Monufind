@@ -356,23 +356,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             final Place place = places.get(0);
 
             try{
-            //mPlace.setAttributions(place.getAttributions().toString());
-            mPlace = new PlaceInfo();
-            mPlace.setName(place.getName().toString());
-            mPlace.setAddress(place.getAddress().toString());
-            mPlace.setId(place.getId());
-            mPlace.setLatlng(place.getLatLng());
-            mPlace.setRating(place.getRating());
-            mPlace.setWebsiteUri(place.getWebsiteUri());
+                //mPlace.setAttributions(place.getAttributions().toString());
+                mPlace = new PlaceInfo();
+                mPlace.setName(place.getName().toString());
+                mPlace.setAddress(place.getAddress().toString());
+                mPlace.setId(place.getId());
+                mPlace.setLatlng(place.getLatLng());
+                mPlace.setRating(place.getRating());
+                mPlace.setWebsiteUri(place.getWebsiteUri());
 
-            Log.d(TAG, "onResult: place: " + mPlace.toString());
+                Log.d(TAG, "onResult: place: " + mPlace.toString());
             }
             catch (NullPointerException e){
                 Log.e(TAG, "onResult: NullPointerException: " + e.getMessage());
             }
 
             moveCameraU(new LatLng(place.getViewport().getCenter().latitude,
-                        place.getViewport().getCenter().longitude), DEFAULT_ZOOM, mPlace.getName());
+                    place.getViewport().getCenter().longitude), DEFAULT_ZOOM, mPlace.getName());
 
             places.release();
         }
