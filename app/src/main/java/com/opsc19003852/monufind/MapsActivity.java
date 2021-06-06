@@ -96,7 +96,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //widgets
     private AutoCompleteTextView mSearchText;
-    private ImageView mGps;
+    private ImageView mGps, mInfo;
+
 
     //vars
     private Boolean mLocationPermissionsGranted = false;
@@ -115,6 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
         mGps = (ImageView) findViewById(R.id.ic_gps);
+        mInfo = (ImageView) findViewById(R.id.place_info);
 
         getLocationPermission();
 
@@ -161,6 +163,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getDeviceLocation();
             }
         });
+        
+        mInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: clicked place info");
+                try {
+                    if (mMarker.isInfoWindowShown()){
+                        mMarker.hideInfoWindow();
+                    }else{
+                        Log.d(TAG, "onClick: Place info: "+mPlace.toString());
+                        mMarker.showInfoWindow();
+                    }
+                }catch (NullPointerException e){
+                    Log.d(TAG, "onClick: NullPointerException: "+e.getMessage());
+                }
+            }
+        });
     }
 
     private void geoLocate() {
@@ -180,7 +199,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Address address = list.get(0);
             Log.d(TAG, "geoLocate: found a location" + address.toString());
 
-            moveCameraS(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address);
+            moveCameraS(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, mPlace);
             /*MarkerOptions options = new MarkerOptions().position(new LatLng(address.getLatitude(),address.getLongitude())).title(address.getAddressLine(0));
             mMap.addMarker(options);*/
 
@@ -230,25 +249,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     //moves camera to searched location
-    private void moveCameraS(LatLng latLng, float zoom, Address address) {
+    private void moveCameraS(LatLng latLng, float zoom, PlaceInfo placeInfo) {
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
         mMap.clear();
 
-        if (address != null) {
+        if (placeInfo != null) {
             try {
-                String snippet = "Address: " + address.getAddressLine(0) + "\n" +
-                        "Phone Number: " + address.getPhone() + "\n" +
-                        "Website: " + address.getUrl() + "\n";
-                // "Price Rating: "+address.getRating(0)+"\n";
+                String snippet = "Address: " + placeInfo.getAddress() + "\n" +
+                        "Phone Number: " + placeInfo.getPhoneNumber() + "\n" +
+                        "Website: " + placeInfo.getWebsiteUri() + "\n"+
+                         "Price Rating: "+placeInfo.getRating()+"\n";
                 Log.d(TAG, "moveCamera: snippet" + snippet);
-                //    Phone Number: null
-                //    Website: null
+
 
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
-                        .title(address.getFeatureName())
+                        .title(placeInfo.getName())
                         .snippet(snippet);
                 mMarker = mMap.addMarker(options);
 
