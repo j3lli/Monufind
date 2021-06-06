@@ -137,7 +137,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Address address = list.get(0);
             Log.d(TAG, "geoLocate: found a location" + address.toString());
 
-           moveCamera(new LatLng(address.getLatitude(),address.getLongitude()),DEFAULT_ZOOM,address);
+           moveCameraS(new LatLng(address.getLatitude(),address.getLongitude()),DEFAULT_ZOOM,address);
             /*MarkerOptions options = new MarkerOptions().position(new LatLng(address.getLatitude(),address.getLongitude())).title(address.getAddressLine(0));
             mMap.addMarker(options);*/
 
@@ -170,7 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .build();
                             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
 
-                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
+                            moveCameraU(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM,"My Location");
                         } else {
                             Log.d(TAG, "onComplete: current location is null");
@@ -185,7 +185,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void moveCamera(LatLng latLng, float zoom, Address address) {
+    //moves camera to searched location
+    private void moveCameraS(LatLng latLng, float zoom, Address address) {
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
@@ -222,7 +223,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void moveCamera(LatLng latLng, float zoom, String title) {
+    //moves camera to users location
+    private void moveCameraU(LatLng latLng, float zoom, String title) {
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
@@ -291,7 +293,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void HideSoftKeyboard(){
-        //doesnt work
+        //doesn't work
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
