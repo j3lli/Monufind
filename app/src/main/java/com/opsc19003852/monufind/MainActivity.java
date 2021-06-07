@@ -1,74 +1,84 @@
 package com.opsc19003852.monufind;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
-    //context string and error string
-    private static final String TAG = "MainActivity";
-    private static final int ERROR_DIALOG_REQUEST = 9001;
+    EditText mUsername, mPassword;
+    Button mLoginbtn;
+    FirebaseAuth fAuth;
+    TextView register;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mPassword=findViewById(R.id.edtPassword);
+        mUsername=findViewById(R.id.edtUsername);
+        mPassword=findViewById(R.id.edtPassword);
+        mLoginbtn=findViewById(R.id.btnLogin);
+        fAuth=FirebaseAuth.getInstance();
+         register= findViewById(R.id.lnkRegister);
 
-        //checking the google play service version to ensure that the
-        //device is able to use map services
-        if (checkServiceVersion()) {
-            init();
-        }
-    }
-
-    //initialization method
-    private void init() {
-        Button btnMap = (Button) findViewById(R.id.btnMap);
-        btnMap.setOnClickListener(new View.OnClickListener() {
+        mLoginbtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-                startActivity(intent);
+            public void onClick(View v) {
+                String username =mUsername.getText().toString().trim();
+                String password=mPassword.getText().toString().trim();
+                if (TextUtils.isEmpty(username)) {
+                    mUsername.setError("Username is required");
+                    return;
+                }
+                if (TextUtils.isEmpty(password)) {
+                    mPassword.setError("Password is required");
+                    return;
+                }
+                if (password.length() < 6) {
+                    mPassword.setError("Password Length must be greater than 6");
+                    return;
+                }
+
+                //Authenticate USer
+                fAuth.signInWithEmailAndPassword(username,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()) {
+                            Toast.makeText(MainActivity.this, "Logged in successfully", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                        }
+                        else{
+                            Toast.makeText(MainActivity.this, "Error!!!"+task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                });
+            }
+
+        });
+        register.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), RegistrationActivity.class));
             }
         });
+
     }
 
-    //boolean method that validates if a user has the correct play services
-    //to run the map service (this is a requirements as per googles' documentation)
-    public boolean checkServiceVersion() {
-        Log.d(TAG, "checkServiceVersion: checking google services version!");
-
-        int available = GoogleApiAvailability.getInstance()
-                .isGooglePlayServicesAvailable(MainActivity.this);
-
-        //if the connection service happens, then the user can use the map
-        if (available == ConnectionResult.SUCCESS) {
-            Log.d(TAG, "checkServiceVersion: google play services are up to date!");
-            return true;
-        }
-        //if the connection service experiences a resolvable error, resolve it and retry
-        else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
-            Log.d(TAG, "checkServiceVersion: and error occurred, but it is resolvable!");
-
-            //generating an error dialog
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this,
-                    available, ERROR_DIALOG_REQUEST);
-            dialog.show();
-        }
-        //if the connection service experiences a fatal error
-        else {
-            Toast.makeText(this, "your device is unable to make map requests!", Toast.LENGTH_SHORT).show();
-        }
-        return false;
-    }
 }
