@@ -56,6 +56,8 @@ import com.google.android.gms.location.places.Places;
 import com.opsc19003852.monufind.models.PlaceInfo;
 
 
+//import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -167,6 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 Log.d(TAG, "onClick: clicked gps icon");
                 getDeviceLocation();
+                getLastKnownLocation();
             }
         });
 
@@ -242,6 +245,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
+    }
+
+    private void getLastKnownLocation() {
+        Log.d(TAG, "getLastKnownLocation: called");
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if(task.isSuccessful()){
+                    Location location = task.getResult();
+
+                    double Long = location.getLongitude();
+                    double Lat = location.getLatitude();
+
+                    Log.d(TAG, "onComplete: Longitude: " + location.getLongitude() + "Latitude: " + location.getLatitude());
+
+                    //GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                }
+            }
+        });
     }
 
     private void getDeviceLocation() {
@@ -360,6 +386,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult: called");
