@@ -44,6 +44,7 @@ import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -58,6 +59,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.places.Places;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -65,6 +67,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.opsc19003852.monufind.models.PlaceInfo;
+import com.directions.route.AbstractRouting;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 
 
 import java.io.IOException;
@@ -73,7 +80,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener ,RoutingListener{
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -136,6 +143,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String[][] arrFood;
     private String[][] arrHis;
     private String[][] arrSports;
+
+    private List<Polyline> polylines=null;
 
 
 
@@ -275,10 +284,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mPlacePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Polyline line = mMap.addPolyline(new PolylineOptions()
+                /*Polyline line = mMap.addPolyline(new PolylineOptions()
                         .add(new LatLng(GlobLocation.getLatitude(), GlobLocation.getLongitude()), new LatLng(markerLat, markerLong))
                         .width(5)
-                        .color(Color.RED));
+                        .color(Color.RED));*/
+                Findroutes(new LatLng(GlobLocation.getLatitude(), GlobLocation.getLongitude()), new LatLng(markerLat, markerLong));
 
 
                 /*PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
@@ -290,8 +300,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } catch (GooglePlayServicesNotAvailableException e) {
                     Log.e(TAG, "onClick: GooglePlayServicesNotAvailableException: " + e.getMessage());
                 }*/
+
+
+
+
+
+
+
+
+
             }
         });
+
+
 
 
         mbtnLandmark.setOnClickListener(new View.OnClickListener() {
@@ -387,6 +408,96 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
     }
+
+
+    // function to find Routes.
+    public void Findroutes(LatLng Start, LatLng End)
+    {
+        if(Start==null || End==null) {
+            Log.d(TAG, "Findroutes: Unable to get location");
+        }
+        else
+        {
+
+            Routing routing = new Routing.Builder()
+                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .withListener(this)
+                    .alternativeRoutes(true)
+                    .waypoints(Start, End)
+                    .key("AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU")  //also define your api key here.
+                    .build();
+            routing.execute();
+        }
+    }
+
+    //Routing call back functions.
+    @Override
+    public void onRoutingFailure(RouteException e) {
+        View parentLayout = findViewById(android.R.id.content);
+        Snackbar snackbar= Snackbar.make(parentLayout, e.toString(), Snackbar.LENGTH_LONG);
+        snackbar.show();
+//        Findroutes(start,end);
+    }
+
+    @Override
+    public void onRoutingStart() {
+        Log.d(TAG, "onRoutingStart: Finding route");
+    }
+
+    //If Route finding success..
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
+
+        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(GlobLocation.getLatitude(), GlobLocation.getLongitude()));
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+        if(polylines!=null) {
+            polylines.clear();
+        }
+        PolylineOptions polyOptions = new PolylineOptions();
+        LatLng polylineStartLatLng=null;
+        LatLng polylineEndLatLng=null;
+
+
+        polylines = new ArrayList<>();
+        //add route(s) to the map using polyline
+        for (int i = 0; i <route.size(); i++) {
+
+            if(i==shortestRouteIndex)
+            {
+                polyOptions.color(getResources().getColor(R.color.colorPrimary));
+                polyOptions.width(7);
+                polyOptions.addAll(route.get(shortestRouteIndex).getPoints());
+                Polyline polyline = mMap.addPolyline(polyOptions);
+                polylineStartLatLng=polyline.getPoints().get(0);
+                int k=polyline.getPoints().size();
+                polylineEndLatLng=polyline.getPoints().get(k-1);
+                polylines.add(polyline);
+
+            }
+            else {
+
+            }
+
+        }
+
+        //Add Marker on route starting position
+        MarkerOptions startMarker = new MarkerOptions();
+        startMarker.position(polylineStartLatLng);
+        startMarker.title("My Location");
+        mMap.addMarker(startMarker);
+
+        //Add Marker on route ending position
+        MarkerOptions endMarker = new MarkerOptions();
+        endMarker.position(polylineEndLatLng);
+        endMarker.title("Destination");
+        mMap.addMarker(endMarker);
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+       // Findroutes(start,end);
+    }
+
 
     //might throw an error
     @SuppressLint("MissingSuperCall")
@@ -663,5 +774,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             places.release();
         }
     };
+
+
 
 }
