@@ -13,7 +13,8 @@
         android:layout_marginTop="80dp"
         android:text="@string/registration"
         android:textSize="25sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/text_grey"/>
 
     <TextView
         android:id="@+id/fstTxt"
@@ -21,35 +22,40 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
         android:layout_marginTop="20dp"
-        android:text="@string/full_name" />
+        android:text="@string/full_name"
+        android:textColor="@color/text_grey"/>
 
     <EditText
         android:id="@+id/edtFullName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
-        android:ems="10" />
+        android:ems="10"
+        android:textColor="@color/text_grey"/>
 
     <TextView
         android:id="@+id/secTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
-        android:text="Email" />
+        android:text="Email"
+        android:textColor="@color/text_grey"/>
 
     <EditText
         android:id="@+id/edtUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
-        android:ems="10" />
+        android:ems="10"
+        android:textColor="@color/text_grey"/>
 
     <TextView
         android:id="@+id/thirdTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
-        android:text="@string/password" />
+        android:text="@string/password"
+        android:textColor="@color/text_grey"/>
 
     <EditText
         android:id="@+id/edtPassword"
@@ -57,7 +63,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
         android:ems="10"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:textColor="@color/text_grey"/>
 
     <TextView
         android:id="@+id/metricHint"
@@ -65,26 +72,30 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Choose either the Imperial or Metric system"
-        />
+        android:textColor="@color/text_grey"/>
+
     <RadioGroup
         android:id="@+id/rgUnits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/text"
         android:layout_gravity="center"
-        android:checkedButton="@+id/sound">
+        android:checkedButton="@+id/sound"
+        android:textColor="@color/text_grey">
 
         <RadioButton
             android:id="@+id/Miles"
             android:layout_width="119dp"
             android:layout_height="wrap_content"
-            android:text="@string/Miles" />
+            android:text="@string/Miles"
+            android:textColor="@color/text_grey"/>
 
         <RadioButton
             android:id="@+id/Kms"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Kms" />
+            android:text="@string/Kms"
+            android:textColor="@color/text_grey"/>
 
     </RadioGroup>
     <TextView
@@ -94,14 +105,15 @@
         android:layout_marginTop="15dp"
         android:layout_gravity="center"
         android:text="@string/choose_a_preferred_landmark_type"
-        />
+        android:textColor="@color/text_grey"/>
+
     <Spinner
         android:id="@+id/spnLandmark"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:drawSelectorOnTop="true"
         android:entries="@array/landmark_types"
-        />
+        android:textColor="@color/text_grey"/>
 
     <Button
         android:id="@+id/btnLogin"
@@ -109,7 +121,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:layout_gravity="center"
-        android:text="@string/register" />
+        android:background="@color/purple_500"
+        android:text="@string/register"
+        android:textColor="@color/white"/>
 
     <TextView
         android:id="@+id/lnkLogin"
