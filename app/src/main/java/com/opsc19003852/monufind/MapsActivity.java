@@ -97,7 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-    private static final float DEFAULT_ZOOM = 16f;
+    private static final float DEFAULT_ZOOM = 15f;
     private static final int PLACE_PICKER_REQUEST = 1;
     private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
             new LatLng(-40, -168), new LatLng(71, 136));
@@ -346,7 +346,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //moves camera to users location
     private void moveCameraU(LatLng latLng, float zoom, String title) {
-        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
+        Log.d(TAG, "moveCameraU: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
         if (!title.equals("My Location")) {
