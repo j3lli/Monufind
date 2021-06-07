@@ -121,10 +121,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String apiKey = "AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU";
     private DatabaseReference mDatabase;
 
-    private String[][] arrEnt=new String[6][4];
-    private String[][] arrFood=new String[6][4];
-    private String[][] arrHis=new String[6][4];
-    private String[][] arrSports=new String[6][4];
+    private String[][] arrEnt;
+    private String[][] arrFood;
+    private String[][] arrHis;
+    private String[][] arrSports;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +157,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 {"El Ridge Corner", "144 Ridge Rd, Bartlett AH, Boksburg", "+27119188467", "-26.16712508831256", "28.2755424500296"},
                 {"Summer Place Boksburg", "Elizabeth Rd &, Leith Rd, Bartlett AH, Boksburg, 1472", "+27118943614", "-26.169666754154566", "28.275365454160436"},
                 {"Monte Cristp", "Beyers Park, Boksburg, 1459", "NA", "-26.18269192192591", "28.26318813836189"},
+        };
+
+        arrFood=new String[][]{
+                {"Dingo's Pub & Restaurant","Shop 4, Lakedene Centre, Lakefield Ave, Benoni, Johannesburg, 1501","+27106150898","-26.17837695922995","28.285933290069632"},
+                {"Burger King Northmead (Drive-thru)","2 10th Ave, Northmead, Benoni, 1501","+27214175830","-26.169779741626378","28.32888929613805"},
+                {"McDonald's Benoni","Cnr & Streets, Bunyan St, Benoni, 1500","+27114209612","-26.184261244560602","28.311697224701412"},
+                {"Cielo Restaurant","1 Country St, Lakefield, Benoni, 1501","+27118457070","-26.181882947178355","28.30427102533554"},
+                {"Grapes Pub & Restaurant","Cnr Edward &, Divot St, Benoni, 1501","+27114224276","-26.182923458337616","28.29811473418057"},
+                {"Cheers Bar and Bistro","17 Russel St, Western extension, Benoni, 1501","+27834010045","-26.19119766810416","28.303387611699847"},
+                {"Gas Monkey Pub & Grill Boksburg","Bartlett AH, Boksburg","+27118971930","-26.176483004886233","28.279124774998476"},
+
+        };
+        arrHis=new String[][]{
+                {"Benoni Museum","60 Elston Ave, Benoni, 1500","+27119996835","-26.1894515","28.3116752"},
+                {"Homestead Dam Recreation Park","56 Wilge Rd, Kleinfontein AH, Benoni, 1501","+27839404249","-26.1","28.3833"},
+                {"CR Swart Park","Vlakfontein 69-Ir, Benoni","NA","-26.18848","28.32078"},
+                {"Korsman Conservancy","The Dr, Westdene, Benoni, 1501","+27826902832","-26.19127838000901","28.29065804748345"},
+
+        };
+        arrSports=new String[][]{
+                {"Benoni Northern Sports Club","1 Brodigan St, Northmead, Benoni, 1501","+27118493410","-26.15540983022986","28.317489168604517"},
+                {"Planet Fitness Benoni Lakefiield","Cnr of Main Road and, Windemere Dr, Lakefield, Benoni, 1501","+27119187424","-26.17920892720237","28.290058183556464"},
+                {"Old Benonians Sports Club","Corner of President Brand Rd &, President Boshoff Rd, Rynfield AH, Benoni, 1514","+27723769637","-26.141503256246978","28.321120583945472"},
+                {"Benoni Lake Club","Cnr Edward &, Divot St, Benoni, 1501","NA","-26.18364842587627","28.298561726521722"},
+                {"Virgin Active Benoni","Cnr Pioneer Drive &, Woburn Ave, Benoni, 1501","+27114221155","-26.184334460596364","28.328998013583877"},
+                {"Fit Xtreme Gym","2 Malherbe Rd, Rynfield, Benoni, 1514","+27114256390","-26.163959468757117","28.329233148340197"},
+                {"VIP Boxing Academy","87 Bedford Ave, Benoni, 1500","+27100208327","-26.18847547754615","28.318946446648294"},
+
         };
 
 
@@ -325,7 +353,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
         }
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < arrEnt.length; i++) {
             String snippet ="";
             snippet = "Address: " + arrEnt[i][1] + "\n" +
                     "Phone Number: " + arrEnt[i][2]; //
@@ -336,9 +364,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet(snippet);
             mMarker = mMap.addMarker(options);
 
+        }
 
+        for (int i = 0; i < arrFood.length; i++) {
+            String snippet ="";
+            snippet = "Address: " + arrFood[i][1] + "\n" +
+                    "Phone Number: " + arrFood[i][2]; //
+            LatLng location = new LatLng(Double.valueOf(arrFood[i][3]),Double.valueOf(arrFood[i][4]));
+            MarkerOptions options = new MarkerOptions()
+                    .position(location)
+                    .title(arrFood[i][0])
+                    .snippet(snippet);
+            mMarker = mMap.addMarker(options);
 
         }
+
+        for (int i = 0; i < arrHis.length; i++) {
+            String snippet ="";
+            snippet = "Address: " + arrHis[i][1] + "\n" +
+                    "Phone Number: " + arrHis[i][2]; //
+            LatLng location = new LatLng(Double.valueOf(arrHis[i][3]),Double.valueOf(arrHis[i][4]));
+            MarkerOptions options = new MarkerOptions()
+                    .position(location)
+                    .title(arrHis[i][0])
+                    .snippet(snippet);
+            mMarker = mMap.addMarker(options);
+
+        }
+
+        for (int i = 0; i < arrSports.length; i++) {
+            String snippet ="";
+            snippet = "Address: " + arrSports[i][1] + "\n" +
+                    "Phone Number: " + arrSports[i][2]; //
+            LatLng location = new LatLng(Double.valueOf(arrSports[i][3]),Double.valueOf(arrSports[i][4]));
+            MarkerOptions options = new MarkerOptions()
+                    .position(location)
+                    .title(arrSports[i][0])
+                    .snippet(snippet);
+            mMarker = mMap.addMarker(options);
+
+        }
+
+       
 
     }
 
