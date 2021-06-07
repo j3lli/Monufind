@@ -142,6 +142,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLandmark = findViewById(R.id.spnLandmark);
 
 
+
+
         /*
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child("JMeV000HgkPcFwWJjsnoMT82QRb2").child("landmark").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -193,6 +195,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 {"VIP Boxing Academy","87 Bedford Ave, Benoni, 1500","+27100208327","-26.18847547754615","28.318946446648294"},
 
         };
+
+
+        mLandmark.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                String landmark=mLandmark.getSelectedItem().toString();
+                Log.d(TAG, "onItemSelected: landmark "+landmark);
+                if (landmark=="Historical"){
+                    mMap.clear();
+                    for (int i = 0; i < arrHis.length; i++) {
+                        String snippet ="";
+                        snippet = "Address: " + arrHis[i][1] + "\n" +
+                                "Phone Number: " + arrHis[i][2]; //
+                        LatLng location = new LatLng(Double.valueOf(arrHis[i][3]),Double.valueOf(arrHis[i][4]));
+                        MarkerOptions options = new MarkerOptions()
+                                .position(location)
+                                .title(arrHis[i][0])
+                                .snippet(snippet);
+                        mMarker = mMap.addMarker(options);
+
+                    }
+                }
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+
 
         getLocationPermission();
 
@@ -352,7 +388,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
         }
 
-        for (int i = 0; i < arrEnt.length; i++) {
+        /*for (int i = 0; i < arrEnt.length; i++) {
             String snippet ="";
             snippet = "Address: " + arrEnt[i][1] + "\n" +
                     "Phone Number: " + arrEnt[i][2]; //
@@ -378,18 +414,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
 
-        for (int i = 0; i < arrHis.length; i++) {
-            String snippet ="";
-            snippet = "Address: " + arrHis[i][1] + "\n" +
-                    "Phone Number: " + arrHis[i][2]; //
-            LatLng location = new LatLng(Double.valueOf(arrHis[i][3]),Double.valueOf(arrHis[i][4]));
-            MarkerOptions options = new MarkerOptions()
-                    .position(location)
-                    .title(arrHis[i][0])
-                    .snippet(snippet);
-            mMarker = mMap.addMarker(options);
 
-        }
 
         for (int i = 0; i < arrSports.length; i++) {
             String snippet ="";
@@ -402,7 +427,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet(snippet);
             mMarker = mMap.addMarker(options);
 
-        }
+        }*/
 
        
 
