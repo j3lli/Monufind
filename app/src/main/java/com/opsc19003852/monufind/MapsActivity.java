@@ -75,6 +75,7 @@ import com.directions.route.RoutingListener;
 
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -289,6 +290,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .width(5)
                         .color(Color.RED));*/
                 Findroutes(new LatLng(GlobLocation.getLatitude(), GlobLocation.getLongitude()), new LatLng(markerLat, markerLong));
+                CalculationByDistance(new LatLng(GlobLocation.getLatitude(), GlobLocation.getLongitude()), new LatLng(markerLat, markerLong));
 
 
                 /*PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
@@ -413,6 +415,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // function to find Routes.
     public void Findroutes(LatLng Start, LatLng End)
     {
+        mMap.clear();
         if(Start==null || End==null) {
             Log.d(TAG, "Findroutes: Unable to get location");
         }
@@ -774,6 +777,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             places.release();
         }
     };
+
+    public double CalculationByDistance(LatLng StartP, LatLng EndP) {
+        int Radius = 6371;
+        double lat1 = StartP.latitude;
+        double lat2 = EndP.latitude;
+        double lon1 = StartP.longitude;
+        double lon2 = EndP.longitude;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        DecimalFormat df = new DecimalFormat("#.##");
+        int kmInDec = Integer.valueOf(newFormat.format(km));
+        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
+                +" Time: "+df.format(valueResult/50*60));
+
+        return Radius * c;
+    }
 
 
 
