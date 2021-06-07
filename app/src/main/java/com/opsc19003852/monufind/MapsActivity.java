@@ -54,8 +54,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.places.Places;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.opsc19003852.monufind.models.PlaceInfo;
 
 
@@ -141,6 +143,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference choicesRef = rootRef.child("Entertainment");
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<String[]> entertainment = new ArrayList<>();
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    int size = (int) ds.getChildrenCount();
+                    String[] choice = new String[size];
+                    int count = 0;
+                    for(DataSnapshot dSnapshot : ds.getChildren()) {
+                        choice[count++] = dSnapshot.getValue(String.class);
+                    }
+                    entertainment.add(choice);
+                }
+                String entertainmentArray[][] = new String[entertainment.size()][];
+                for (int j = 0; j < entertainment.size(); j++) {
+                    entertainmentArray[j] = entertainment.get(j);
+                }
+                //Test the array
+                for(String[] array : entertainmentArray) {
+                    Log.d(TAG, Arrays.toString(array));
+                }
+                //Do what you need to do with your 2D array
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("TAG", databaseError.getMessage()); //Don't ignore potential errors!
+            }
+        };
+        choicesRef.addListenerForSingleValueEvent(valueEventListener);
+
 
 
         getLocationPermission();
