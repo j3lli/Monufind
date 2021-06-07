@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Spinner;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -121,6 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker mMarker;
     private String apiKey = "AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU";
     private DatabaseReference mDatabase;
+    Spinner mLandmark;
 
     private String[][] arrEnt;
     private String[][] arrFood;
@@ -137,6 +139,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGps = (ImageView) findViewById(R.id.ic_gps);
         mInfo = (ImageView) findViewById(R.id.place_info);
         mPlacePicker = (ImageView) findViewById(R.id.place_picker);
+        mLandmark = findViewById(R.id.spnLandmark);
 
 
         /*
@@ -175,7 +178,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         };
         arrHis=new String[][]{
                 {"Benoni Museum","60 Elston Ave, Benoni, 1500","+27119996835","-26.1894515","28.3116752"},
-                {"Homestead Dam Recreation Park","56 Wilge Rd, Kleinfontein AH, Benoni, 1501","+27839404249","-26.1","28.3833"},
+                {"Homestead Dam Recreation Park","56 Wilge Rd, Kleinfontein AH, Benoni, 1501","+27839404249","-26.17099","28.28958"},
                 {"CR Swart Park","Vlakfontein 69-Ir, Benoni","NA","-26.18848","28.32078"},
                 {"Korsman Conservancy","The Dr, Westdene, Benoni, 1501","+27826902832","-26.19127838000901","28.29065804748345"},
 
@@ -190,14 +193,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 {"VIP Boxing Academy","87 Bedford Ave, Benoni, 1500","+27100208327","-26.18847547754615","28.318946446648294"},
 
         };
-
-
-
-
-
-
-
-
 
         getLocationPermission();
 
