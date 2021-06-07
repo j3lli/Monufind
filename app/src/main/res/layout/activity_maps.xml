@@ -45,7 +45,22 @@
              />
 
 
+        <TextView
+            android:id="@+id/spinnerhint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_gravity="center"
+            android:text="@string/choose_a_preferred_landmark_type"
+            android:textColor="@color/text_grey"/>
 
+        <Spinner
+            android:id="@+id/spnLandmark"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/landmark_types"
+            android:textColor="@color/text_grey"/>
 
 
 

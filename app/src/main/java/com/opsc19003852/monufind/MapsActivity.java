@@ -53,6 +53,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.places.Places;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -126,6 +127,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String[][] arrHis;
     private String[][] arrSports;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,8 +139,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mPlacePicker = (ImageView) findViewById(R.id.place_picker);
 
 
+        /*
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("Landmarks").child("Entertainment").child("East Rand Mall").child("Lat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        mDatabase.child("users").child("JMeV000HgkPcFwWJjsnoMT82QRb2").child("landmark").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
@@ -147,7 +151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("firebase", String.valueOf(task.getResult().getValue()));
                 }
             }
-        });
+        });*/
 
 
         arrEnt = new String[][]{
