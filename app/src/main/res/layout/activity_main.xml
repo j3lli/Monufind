@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_reg_splash_faded">
+    android:background="@drawable/login_reg_background_faded">
 
     <TextView
         android:id="@+id/loginscrn"
