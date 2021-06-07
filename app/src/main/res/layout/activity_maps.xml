@@ -45,25 +45,6 @@
              />
 
 
-        <TextView
-            android:id="@+id/spinnerhint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_gravity="center"
-            android:text="@string/choose_a_preferred_landmark_type"
-            android:textColor="@color/text_grey"/>
-
-        <Spinner
-            android:id="@+id/spnLandmark"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:drawSelectorOnTop="true"
-            android:entries="@array/landmark_types"
-            android:textColor="@color/text_grey"/>
-
-
-
     </RelativeLayout>
 
 
@@ -98,5 +79,39 @@
         android:scaleType="centerCrop"
         android:id="@+id/place_info"
         android:src="@drawable/ic_info"/>
+
+    <Spinner
+        android:id="@+id/spnLandmark"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/place_info"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:scaleType="centerCrop"
+        android:drawSelectorOnTop="true"
+        android:entries="@array/landmark_types"
+        android:src="@drawable/ic_landmark"
+        android:textColor="@color/text_grey" />
+
+    <TextView
+        android:id="@+id/spinnerhint"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/place_info"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_landmark"
+        android:textColor="@color/text_grey" />
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/place_info"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:scaleType="centerCrop"
+        android:id="@+id/landmark_type"
+        android:src="@drawable/ic_landmark"/>
 
 </RelativeLayout>
