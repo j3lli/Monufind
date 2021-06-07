@@ -162,7 +162,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (int i = 0; i < 6; i++) {
             String snippet ="";
             snippet = "Address: " + arrEnt[i][1] + "\n" +
-                        "Phone Number: " + arrEnt[i][2];
+                        "Phone Number: " + arrEnt[i][2]; //
             LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
             MarkerOptions options = new MarkerOptions()
                     .position(location)
