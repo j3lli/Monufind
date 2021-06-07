@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -52,6 +53,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.places.Places;
@@ -125,6 +128,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private DatabaseReference mDatabase;
     Spinner mLandmark;
     Button mbtnLandmark;
+    private Location GlobLocation;
+    private double markerLat;
+    private double markerLong;
 
     private String[][] arrEnt;
     private String[][] arrFood;
@@ -269,7 +275,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mPlacePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                Polyline line = mMap.addPolyline(new PolylineOptions()
+                        .add(new LatLng(GlobLocation.getLatitude(), GlobLocation.getLongitude()), new LatLng(markerLat, markerLong))
+                        .width(5)
+                        .color(Color.RED));
+
+
+                /*PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
                 try {
                     startActivityForResult(builder.build(MapsActivity.this), PLACE_PICKER_REQUEST);
@@ -277,7 +289,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.e(TAG, "onClick: GooglePlayServicesRepairableException: " + e.getMessage());
                 } catch (GooglePlayServicesNotAvailableException e) {
                     Log.e(TAG, "onClick: GooglePlayServicesNotAvailableException: " + e.getMessage());
-                }
+                }*/
             }
         });
 
@@ -302,15 +314,76 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     }
                 }
+                if (landmark.equals("Entertainment")){
+                    mMap.clear();
+                    for (int i = 0; i < arrEnt.length; i++) {
+                        String snippet ="";
+                        snippet = "Address: " + arrEnt[i][1] + "\n" +
+                                "Phone Number: " + arrEnt[i][2]; //
+                        LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
+                        MarkerOptions options = new MarkerOptions()
+                                .position(location)
+                                .title(arrEnt[i][0])
+                                .snippet(snippet);
+                        mMarker = mMap.addMarker(options);
+
+                    }
+                }
+                if (landmark.equals("Food")){
+                    mMap.clear();
+                    for (int i = 0; i < arrFood.length; i++) {
+                        String snippet ="";
+                        snippet = "Address: " + arrFood[i][1] + "\n" +
+                                "Phone Number: " + arrFood[i][2]; //
+                        LatLng location = new LatLng(Double.valueOf(arrFood[i][3]),Double.valueOf(arrFood[i][4]));
+                        MarkerOptions options = new MarkerOptions()
+                                .position(location)
+                                .title(arrFood[i][0])
+                                .snippet(snippet);
+                        mMarker = mMap.addMarker(options);
+
+                    }
+                }
+                if (landmark.equals("Sports")){
+                    mMap.clear();
+                    for (int i = 0; i < arrSports.length; i++) {
+                        String snippet ="";
+                        snippet = "Address: " + arrSports[i][1] + "\n" +
+                                "Phone Number: " + arrSports[i][2]; //
+                        LatLng location = new LatLng(Double.valueOf(arrSports[i][3]),Double.valueOf(arrSports[i][4]));
+                        MarkerOptions options = new MarkerOptions()
+                                .position(location)
+                                .title(arrSports[i][0])
+                                .snippet(snippet);
+                        mMarker = mMap.addMarker(options);
+
+                    }
+                }
 
 
             }
+
+
+
 
             /*@Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 // your code here
             }*/
 
+        });
+
+        // adding on click listener to marker of google maps.
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                // on marker click we are getting the title of our marker
+                // which is clicked and displaying it in a toast message.
+                markerLat = marker.getPosition().latitude;
+                markerLong= marker.getPosition().longitude;
+                Log.d(TAG, "onMarkerClick: "+markerLat+"    "+markerLong);
+                return false;
+            }
         });
 
     }
@@ -371,7 +444,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: found location");
                             Location currentLocation = (Location) task.getResult();
-
+                            GlobLocation=currentLocation;
                            /* CameraPosition cameraPosition = CameraPosition.builder()
                             .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
                             .zoom(DEFAULT_ZOOM)
@@ -394,7 +467,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
         }
 
-        /*for (int i = 0; i < arrEnt.length; i++) {
+        for (int i = 0; i < arrEnt.length; i++) {
             String snippet ="";
             snippet = "Address: " + arrEnt[i][1] + "\n" +
                     "Phone Number: " + arrEnt[i][2]; //
@@ -432,8 +505,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .title(arrSports[i][0])
                     .snippet(snippet);
             mMarker = mMap.addMarker(options);
-
-        }*/
+        }
 
        
 
