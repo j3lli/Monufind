@@ -23,6 +23,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -123,6 +124,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String apiKey = "AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU";
     private DatabaseReference mDatabase;
     Spinner mLandmark;
+    Button mbtnLandmark;
 
     private String[][] arrEnt;
     private String[][] arrFood;
@@ -140,6 +142,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mInfo = (ImageView) findViewById(R.id.place_info);
         mPlacePicker = (ImageView) findViewById(R.id.place_picker);
         mLandmark = findViewById(R.id.spnLandmark);
+        mbtnLandmark = (Button) findViewById(R.id.btnLandmark);
 
 
 
@@ -197,9 +200,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         };
 
 
-        mLandmark.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+        mbtnLandmark.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
                 // your code here
                 String landmark=mLandmark.getSelectedItem().toString();
                 Log.d(TAG, "onItemSelected: landmark "+landmark);
@@ -222,10 +224,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
 
-            @Override
+            /*@Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 // your code here
-            }
+            }*/
 
         });
 

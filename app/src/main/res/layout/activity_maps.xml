@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
@@ -113,5 +113,13 @@
         android:scaleType="centerCrop"
         android:id="@+id/landmark_type"
         android:src="@drawable/ic_landmark"/>
+
+    <Button
+        android:id="@+id/btnLandmark"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/spnLandmark"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp" />
 
 </RelativeLayout>
