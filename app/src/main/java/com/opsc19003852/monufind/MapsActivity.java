@@ -159,20 +159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 {"Monte Cristp", "Beyers Park, Boksburg, 1459", "NA", "-26.18269192192591", "28.26318813836189"},
         };
 
-        for (int i = 0; i < 6; i++) {
-            String snippet ="";
-            snippet = "Address: " + arrEnt[i][1] + "\n" +
-                        "Phone Number: " + arrEnt[i][2]; //
-            LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
-            MarkerOptions options = new MarkerOptions()
-                    .position(location)
-                    .title(arrEnt[i][0])
-                    .snippet(snippet);
-            mMarker = mMap.addMarker(options);
 
-
-
-        }
 
 
 
@@ -337,6 +324,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (SecurityException e) {
             Log.d(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
         }
+
+        for (int i = 0; i < 6; i++) {
+            String snippet ="";
+            snippet = "Address: " + arrEnt[i][1] + "\n" +
+                    "Phone Number: " + arrEnt[i][2]; //
+            LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
+            MarkerOptions options = new MarkerOptions()
+                    .position(location)
+                    .title(arrEnt[i][0])
+                    .snippet(snippet);
+            mMarker = mMap.addMarker(options);
+
+
+
+        }
+
     }
 
     //moves camera to searched location
