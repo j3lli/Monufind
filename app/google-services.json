@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "360459872993",
+    "firebase_url": "https://monufind-23728-default-rtdb.firebaseio.com",
+    "project_id": "monufind-23728",
+    "storage_bucket": "monufind-23728.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:360459872993:android:b2be3cc33a298a04b3a5a0",
+        "android_client_info": {
+          "package_name": "com.opsc19003852.monufind"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "360459872993-ivu2fslitsp8a3m5lgm69gkssvvm77k4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVxyZ3WEn0hK3BNkPEtG-oQ_vzBYioCAk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "360459872993-ivu2fslitsp8a3m5lgm69gkssvvm77k4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
