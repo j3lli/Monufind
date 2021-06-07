@@ -136,7 +136,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mPlacePicker = (ImageView) findViewById(R.id.place_picker);
 
 // ...
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+       /* mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("Landmarks").child("Entertainment").child("East Rand Mall").child("Lat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -147,11 +147,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("firebase", String.valueOf(task.getResult().getValue()));
                 }
             }
-        });
+        });*/
 
 
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Entertainment");
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = mDatabase.child("choices");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
