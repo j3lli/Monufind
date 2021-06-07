@@ -121,10 +121,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String apiKey = "AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU";
     private DatabaseReference mDatabase;
 
-    private String[][] arrEnt;
-    private void initializeMChoices(int i, int j) {
-        arrEnt = new String[i][j];
-    }
+    private String[][] arrEnt=new String[6][4];
+    private String[][] arrFood=new String[6][4];
+    private String[][] arrHis=new String[6][4];
+    private String[][] arrSports=new String[6][4];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,8 +135,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mInfo = (ImageView) findViewById(R.id.place_info);
         mPlacePicker = (ImageView) findViewById(R.id.place_picker);
 
-// ...
-       /* mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("Landmarks").child("Entertainment").child("East Rand Mall").child("Lat").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -147,51 +147,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("firebase", String.valueOf(task.getResult().getValue()));
                 }
             }
-        });*/
-
-
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference ref = mDatabase.child("Landmarks").child("Entertainment");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // We first go through the whole node to count it's child nodes
-                int i = 0, j = 0;
-                while(snapshot.child(Integer.toString(i)).exists())
-                {
-                    j = 0;
-                    while(snapshot.child(Integer.toString(i)).child(Integer.toString(i)).exists())
-                    {
-                        j++;
-                    }
-                    i++;
-                }
-                // we have the numbers, now we initialize the array
-                initializeMChoices(i, j);
-                //we go through the whole node to put child-node values in the 2D array
-                i = 0;
-                j = 0;
-                while(snapshot.child(Integer.toString(i)).exists())
-                {
-                    while(snapshot.child(Integer.toString(i)).child(Integer.toString(i)).exists())
-                    {
-                        j++;
-                        arrEnt[i][j] = snapshot.child(Integer.toString(i)).child(Integer.toString(i)).toString();
-                    }
-                    i++;
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
         });
 
-        for(String[] array : arrEnt) {
-            Log.d(TAG, Arrays.toString(array));
+
+        arrEnt = new String[][]{
+                {"Lakeside Mall", "18b Tom Jones St, Benoni, 1501", "+27114271801", "-26.18413410789464", "28.315627708697136"},
+                {"East Rand Mall", "Bentel Ave, Jansen Park, Boksburg, 1459", "+27118231110", "-26.180671228055335", "28.24254497895984"},
+                {"Formula-K (Pty) LTD", "7 Golden Dr, Morehill, Benoni, 1501", "+27728900103", "-26.176940368117258", "28.336907493789077"},
+                {"El Ridge Corner", "144 Ridge Rd, Bartlett AH, Boksburg", "+27119188467", "-26.16712508831256", "28.2755424500296"},
+                {"Summer Place Boksburg", "Elizabeth Rd &, Leith Rd, Bartlett AH, Boksburg, 1472", "+27118943614", "-26.169666754154566", "28.275365454160436"},
+                {"Monte Cristp", "Beyers Park, Boksburg, 1459", "NA", "-26.18269192192591", "28.26318813836189"},
+        };
+
+        for (int i = 0; i < 6; i++) {
+            String snippet ="";
+            snippet = "Address: " + arrEnt[i][1] + "\n" +
+                        "Phone Number: " + arrEnt[i][2];
+            LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
+            MarkerOptions options = new MarkerOptions()
+                    .position(location)
+                    .title(arrEnt[i][0])
+                    .snippet(snippet);
+            mMarker = mMap.addMarker(options);
+
+
+
         }
+
+
+
+
 
 
 
