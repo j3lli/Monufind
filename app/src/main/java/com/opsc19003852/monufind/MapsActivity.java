@@ -121,6 +121,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String apiKey = "AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU";
     private DatabaseReference mDatabase;
 
+    private String[][] arrEnt;
+    private void initializeMChoices(int i, int j) {
+        arrEnt = new String[i][j];
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,38 +150,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference choicesRef = rootRef.child("Entertainment");
-        ValueEventListener valueEventListener = new ValueEventListener() {
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Entertainment");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<String[]> entertainment = new ArrayList<>();
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    int size = (int) ds.getChildrenCount();
-                    String[] choice = new String[size];
-                    int count = 0;
-                    for(DataSnapshot dSnapshot : ds.getChildren()) {
-                        choice[count++] = dSnapshot.getValue(String.class);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // We first go through the whole node to count it's child nodes
+                int i = 0, j = 0;
+                while(snapshot.child(Integer.toString(i)).exists())
+                {
+                    j = 0;
+                    while(snapshot.child(Integer.toString(i)).child(Integer.toString(i)).exists())
+                    {
+                        j++;
                     }
-                    entertainment.add(choice);
+                    i++;
                 }
-                String entertainmentArray[][] = new String[entertainment.size()][];
-                for (int j = 0; j < entertainment.size(); j++) {
-                    entertainmentArray[j] = entertainment.get(j);
+                // we have the numbers, now we initialize the array
+                initializeMChoices(i, j);
+                //we go through the whole node to put child-node values in the 2D array
+                i = 0;
+                j = 0;
+                while(snapshot.child(Integer.toString(i)).exists())
+                {
+                    while(snapshot.child(Integer.toString(i)).child(Integer.toString(i)).exists())
+                    {
+                        j++;
+                        arrEnt[i][j] = snapshot.child(Integer.toString(i)).child(Integer.toString(i)).toString();
+                    }
+                    i++;
                 }
-                //Test the array
-                for(String[] array : entertainmentArray) {
-                    Log.d(TAG, Arrays.toString(array));
-                }
-                //Do what you need to do with your 2D array
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("TAG", databaseError.getMessage()); //Don't ignore potential errors!
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
-        };
-        choicesRef.addListenerForSingleValueEvent(valueEventListener);
+        });
+
+        for(String[] array : arrEnt) {
+            Log.d(TAG, Arrays.toString(array));
+        }
 
 
 
