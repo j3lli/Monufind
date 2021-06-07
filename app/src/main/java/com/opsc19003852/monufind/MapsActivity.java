@@ -200,36 +200,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         };
 
 
-        mbtnLandmark.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                // your code here
-                String landmark=mLandmark.getSelectedItem().toString();
-                Log.d(TAG, "onItemSelected: landmark "+landmark);
-                if (landmark=="Historical"){
-                    mMap.clear();
-                    for (int i = 0; i < arrHis.length; i++) {
-                        String snippet ="";
-                        snippet = "Address: " + arrHis[i][1] + "\n" +
-                                "Phone Number: " + arrHis[i][2]; //
-                        LatLng location = new LatLng(Double.valueOf(arrHis[i][3]),Double.valueOf(arrHis[i][4]));
-                        MarkerOptions options = new MarkerOptions()
-                                .position(location)
-                                .title(arrHis[i][0])
-                                .snippet(snippet);
-                        mMarker = mMap.addMarker(options);
 
-                    }
-                }
-
-
-            }
-
-            /*@Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }*/
-
-        });
 
 
         getLocationPermission();
@@ -309,6 +280,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
+
+        mbtnLandmark.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                // your code here
+                String landmark=mLandmark.getSelectedItem().toString();
+
+                if (landmark.equals("Historical")){
+                    mMap.clear();
+                    for (int i = 0; i < arrHis.length; i++) {
+                        String snippet ="";
+                        snippet = "Address: " + arrHis[i][1] + "\n" +
+                                "Phone Number: " + arrHis[i][2]; //
+                        LatLng location = new LatLng(Double.valueOf(arrHis[i][3]),Double.valueOf(arrHis[i][4]));
+                        MarkerOptions options = new MarkerOptions()
+                                .position(location)
+                                .title(arrHis[i][0])
+                                .snippet(snippet);
+                        mMarker = mMap.addMarker(options);
+
+                    }
+                }
+
+
+            }
+
+            /*@Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }*/
+
+        });
+
     }
 
     //might throw an error
