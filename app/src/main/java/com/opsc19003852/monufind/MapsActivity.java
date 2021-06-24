@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -18,6 +19,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.ConsoleMessage;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -51,7 +53,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.places.Places;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.opsc19003852.monufind.models.PlaceInfo;
 import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
@@ -91,6 +96,144 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
             init();
         }
+
+
+        mUserID = fAuth.getCurrentUser().getUid();
+
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("users").child(mUserID).child("landmark").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Log.e("firebase", "Error getting data", task.getException());
+                }
+                else {
+                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                    mLandmarkType = String.valueOf(task.getResult().getValue());
+                    Log.d("firebase", mLandmarkType);
+
+                    if( mLandmarkType.equals("Entertainment")){
+                        for (int i = 0; i < arrEnt.length; i++) {
+                            String snippet ="";
+                            snippet = "Address: " + arrEnt[i][1] + "\n" +
+                                    "Phone Number: " + arrEnt[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrEnt[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+
+                        }
+                    }
+
+                    if( mLandmarkType.equals("Food")) {
+                        for (int i = 0; i < arrFood.length; i++) {
+                            String snippet = "";
+                            snippet = "Address: " + arrFood[i][1] + "\n" +
+                                    "Phone Number: " + arrFood[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrFood[i][3]), Double.valueOf(arrFood[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrFood[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+
+                        }
+                    }
+
+                    if( mLandmarkType.equals("Sports")) {
+                        for (int i = 0; i < arrSports.length; i++) {
+                            String snippet = "";
+                            snippet = "Address: " + arrSports[i][1] + "\n" +
+                                    "Phone Number: " + arrSports[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrSports[i][3]), Double.valueOf(arrSports[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrSports[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+                        }
+                    }
+
+                    if( mLandmarkType.equals("Historical")) {
+                        for (int i = 0; i < arrHis.length; i++) {
+                            String snippet = "";
+                            snippet = "Address: " + arrHis[i][1] + "\n" +
+                                    "Phone Number: " + arrHis[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrHis[i][3]), Double.valueOf(arrHis[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrHis[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+
+                        }
+                    }
+                    /*else {
+                        for (int i = 0; i < arrEnt.length; i++) {
+                            String snippet ="";
+                            snippet = "Address: " + arrEnt[i][1] + "\n" +
+                                    "Phone Number: " + arrEnt[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrEnt[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+
+                        }
+
+
+
+                        for (int i = 0; i < arrFood.length; i++) {
+                            String snippet = "";
+                            snippet = "Address: " + arrFood[i][1] + "\n" +
+                                    "Phone Number: " + arrFood[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrFood[i][3]), Double.valueOf(arrFood[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrFood[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+
+                        }
+
+
+
+                        for (int i = 0; i < arrSports.length; i++) {
+                            String snippet = "";
+                            snippet = "Address: " + arrSports[i][1] + "\n" +
+                                    "Phone Number: " + arrSports[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrSports[i][3]), Double.valueOf(arrSports[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrSports[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+                        }
+
+
+
+                        for (int i = 0; i < arrHis.length; i++) {
+                            String snippet = "";
+                            snippet = "Address: " + arrHis[i][1] + "\n" +
+                                    "Phone Number: " + arrHis[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrHis[i][3]), Double.valueOf(arrHis[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrHis[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+
+                        }
+                    }*/
+
+                }
+            }
+        });
+
     }
 
 
@@ -117,13 +260,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient;
     private PlaceInfo mPlace;
     private Marker mMarker;
+    private String mLandmarkType;
     private String apiKey = "AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU";
+    String mUserID; //= getIntent().getStringExtra("UserID");
     private DatabaseReference mDatabase;
     Spinner mLandmark;
     Button mbtnLandmark;
     private Location GlobLocation;
     private double markerLat;
     private double markerLong;
+
+    FirebaseAuth fAuth;
 
     private String[][] arrEnt;
     private String[][] arrFood;
@@ -144,13 +291,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mPlacePicker = (ImageView) findViewById(R.id.place_picker);
         mLandmark = findViewById(R.id.spnLandmark);
         mbtnLandmark = (Button) findViewById(R.id.btnLandmark);
+        fAuth = FirebaseAuth.getInstance();
 
 
 
+        /*mUserID = fAuth.getCurrentUser().getUid();
 
-        /*
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("users").child("JMeV000HgkPcFwWJjsnoMT82QRb2").child("landmark").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        mDatabase.child("users").child(mUserID).child("landmark").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
@@ -158,9 +307,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 else {
                     Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                    mLandmarkType = String.valueOf(task.getResult().getValue());
+                    Log.d("firebase", mLandmarkType);
                 }
             }
         });*/
+
+
 
 
         arrEnt = new String[][]{
@@ -566,46 +719,124 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
         }
 
-        for (int i = 0; i < arrEnt.length; i++) {
-            String snippet ="";
-            snippet = "Address: " + arrEnt[i][1] + "\n" +
-                    "Phone Number: " + arrEnt[i][2]; //
-            LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
-            MarkerOptions options = new MarkerOptions()
-                    .position(location)
-                    .title(arrEnt[i][0])
-                    .snippet(snippet);
-            mMarker = mMap.addMarker(options);
+        //Log.d("firebase", mLandmarkType);
 
+        /*if( mLandmarkType == "Entertainment"){
+            for (int i = 0; i < arrEnt.length; i++) {
+                String snippet ="";
+                snippet = "Address: " + arrEnt[i][1] + "\n" +
+                        "Phone Number: " + arrEnt[i][2]; //
+                LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
+                MarkerOptions options = new MarkerOptions()
+                        .position(location)
+                        .title(arrEnt[i][0])
+                        .snippet(snippet);
+                mMarker = mMap.addMarker(options);
+
+            }
         }
 
-        for (int i = 0; i < arrFood.length; i++) {
-            String snippet ="";
-            snippet = "Address: " + arrFood[i][1] + "\n" +
-                    "Phone Number: " + arrFood[i][2]; //
-            LatLng location = new LatLng(Double.valueOf(arrFood[i][3]),Double.valueOf(arrFood[i][4]));
-            MarkerOptions options = new MarkerOptions()
-                    .position(location)
-                    .title(arrFood[i][0])
-                    .snippet(snippet);
-            mMarker = mMap.addMarker(options);
+        if( mLandmarkType == "Food") {
+            for (int i = 0; i < arrFood.length; i++) {
+                String snippet = "";
+                snippet = "Address: " + arrFood[i][1] + "\n" +
+                        "Phone Number: " + arrFood[i][2]; //
+                LatLng location = new LatLng(Double.valueOf(arrFood[i][3]), Double.valueOf(arrFood[i][4]));
+                MarkerOptions options = new MarkerOptions()
+                        .position(location)
+                        .title(arrFood[i][0])
+                        .snippet(snippet);
+                mMarker = mMap.addMarker(options);
 
+            }
         }
 
-
-
-        for (int i = 0; i < arrSports.length; i++) {
-            String snippet ="";
-            snippet = "Address: " + arrSports[i][1] + "\n" +
-                    "Phone Number: " + arrSports[i][2]; //
-            LatLng location = new LatLng(Double.valueOf(arrSports[i][3]),Double.valueOf(arrSports[i][4]));
-            MarkerOptions options = new MarkerOptions()
-                    .position(location)
-                    .title(arrSports[i][0])
-                    .snippet(snippet);
-            mMarker = mMap.addMarker(options);
+        if( mLandmarkType == "Sports") {
+            for (int i = 0; i < arrSports.length; i++) {
+                String snippet = "";
+                snippet = "Address: " + arrSports[i][1] + "\n" +
+                        "Phone Number: " + arrSports[i][2]; //
+                LatLng location = new LatLng(Double.valueOf(arrSports[i][3]), Double.valueOf(arrSports[i][4]));
+                MarkerOptions options = new MarkerOptions()
+                        .position(location)
+                        .title(arrSports[i][0])
+                        .snippet(snippet);
+                mMarker = mMap.addMarker(options);
+            }
         }
 
+        if( mLandmarkType == "Historical") {
+            for (int i = 0; i < arrHis.length; i++) {
+                String snippet = "";
+                snippet = "Address: " + arrHis[i][1] + "\n" +
+                        "Phone Number: " + arrHis[i][2]; //
+                LatLng location = new LatLng(Double.valueOf(arrHis[i][3]), Double.valueOf(arrHis[i][4]));
+                MarkerOptions options = new MarkerOptions()
+                        .position(location)
+                        .title(arrHis[i][0])
+                        .snippet(snippet);
+                mMarker = mMap.addMarker(options);
+
+            }
+        }
+        else {
+            for (int i = 0; i < arrEnt.length; i++) {
+                String snippet ="";
+                snippet = "Address: " + arrEnt[i][1] + "\n" +
+                        "Phone Number: " + arrEnt[i][2]; //
+                LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
+                MarkerOptions options = new MarkerOptions()
+                        .position(location)
+                        .title(arrEnt[i][0])
+                        .snippet(snippet);
+                mMarker = mMap.addMarker(options);
+
+            }
+
+
+
+            for (int i = 0; i < arrFood.length; i++) {
+                String snippet = "";
+                snippet = "Address: " + arrFood[i][1] + "\n" +
+                        "Phone Number: " + arrFood[i][2]; //
+                LatLng location = new LatLng(Double.valueOf(arrFood[i][3]), Double.valueOf(arrFood[i][4]));
+                MarkerOptions options = new MarkerOptions()
+                        .position(location)
+                        .title(arrFood[i][0])
+                        .snippet(snippet);
+                mMarker = mMap.addMarker(options);
+
+            }
+
+
+
+            for (int i = 0; i < arrSports.length; i++) {
+                String snippet = "";
+                snippet = "Address: " + arrSports[i][1] + "\n" +
+                        "Phone Number: " + arrSports[i][2]; //
+                LatLng location = new LatLng(Double.valueOf(arrSports[i][3]), Double.valueOf(arrSports[i][4]));
+                MarkerOptions options = new MarkerOptions()
+                        .position(location)
+                        .title(arrSports[i][0])
+                        .snippet(snippet);
+                mMarker = mMap.addMarker(options);
+            }
+
+
+
+            for (int i = 0; i < arrHis.length; i++) {
+                String snippet = "";
+                snippet = "Address: " + arrHis[i][1] + "\n" +
+                        "Phone Number: " + arrHis[i][2]; //
+                LatLng location = new LatLng(Double.valueOf(arrHis[i][3]), Double.valueOf(arrHis[i][4]));
+                MarkerOptions options = new MarkerOptions()
+                        .position(location)
+                        .title(arrHis[i][0])
+                        .snippet(snippet);
+                mMarker = mMap.addMarker(options);
+
+            }
+        }*/
        
 
     }
