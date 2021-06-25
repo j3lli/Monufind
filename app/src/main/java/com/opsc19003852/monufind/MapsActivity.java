@@ -100,21 +100,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mUserID = fAuth.getCurrentUser().getUid();
 
-        //test data retrieving
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("Landmarks").child("Entertainment").child("East Rand Mall").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                } else {
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                    String landmark = String.valueOf(task.getResult().getValue());
-                    Log.d("firebase", landmark);
-                }
-            }
-        });
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child(mUserID).child("landmark").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
@@ -185,64 +170,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         }
                     }
-                    /*else {
-                        for (int i = 0; i < arrEnt.length; i++) {
-                            String snippet ="";
-                            snippet = "Address: " + arrEnt[i][1] + "\n" +
-                                    "Phone Number: " + arrEnt[i][2]; //
-                            LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
-                            MarkerOptions options = new MarkerOptions()
-                                    .position(location)
-                                    .title(arrEnt[i][0])
-                                    .snippet(snippet);
-                            mMarker = mMap.addMarker(options);
-
-                        }
-
-
-
-                        for (int i = 0; i < arrFood.length; i++) {
-                            String snippet = "";
-                            snippet = "Address: " + arrFood[i][1] + "\n" +
-                                    "Phone Number: " + arrFood[i][2]; //
-                            LatLng location = new LatLng(Double.valueOf(arrFood[i][3]), Double.valueOf(arrFood[i][4]));
-                            MarkerOptions options = new MarkerOptions()
-                                    .position(location)
-                                    .title(arrFood[i][0])
-                                    .snippet(snippet);
-                            mMarker = mMap.addMarker(options);
-
-                        }
-
-
-
-                        for (int i = 0; i < arrSports.length; i++) {
-                            String snippet = "";
-                            snippet = "Address: " + arrSports[i][1] + "\n" +
-                                    "Phone Number: " + arrSports[i][2]; //
-                            LatLng location = new LatLng(Double.valueOf(arrSports[i][3]), Double.valueOf(arrSports[i][4]));
-                            MarkerOptions options = new MarkerOptions()
-                                    .position(location)
-                                    .title(arrSports[i][0])
-                                    .snippet(snippet);
-                            mMarker = mMap.addMarker(options);
-                        }
-
-
-
-                        for (int i = 0; i < arrHis.length; i++) {
-                            String snippet = "";
-                            snippet = "Address: " + arrHis[i][1] + "\n" +
-                                    "Phone Number: " + arrHis[i][2]; //
-                            LatLng location = new LatLng(Double.valueOf(arrHis[i][3]), Double.valueOf(arrHis[i][4]));
-                            MarkerOptions options = new MarkerOptions()
-                                    .position(location)
-                                    .title(arrHis[i][0])
-                                    .snippet(snippet);
-                            mMarker = mMap.addMarker(options);
-
-                        }
-                    }*/
 
                 }
             }
@@ -307,29 +234,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mbtnLandmark = (Button) findViewById(R.id.btnLandmark);
         fAuth = FirebaseAuth.getInstance();
 
-
-
-        /*mUserID = fAuth.getCurrentUser().getUid();
-
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("users").child(mUserID).child("landmark").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                }
-                else {
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                    mLandmarkType = String.valueOf(task.getResult().getValue());
-                    Log.d("firebase", mLandmarkType);
-                }
-            }
-        });*/
-
-
-
-
         arrEnt = new String[][]{
                 {"Lakeside Mall", "18b Tom Jones St, Benoni, 1501", "+27114271801", "-26.18413410789464", "28.315627708697136"},
                 {"East Rand Mall", "Bentel Ave, Jansen Park, Boksburg, 1459", "+27118231110", "-26.180671228055335", "28.24254497895984"},
@@ -338,6 +242,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 {"Summer Place Boksburg", "Elizabeth Rd &, Leith Rd, Bartlett AH, Boksburg, 1472", "+27118943614", "-26.169666754154566", "28.275365454160436"},
                 {"Monte Cristp", "Beyers Park, Boksburg, 1459", "NA", "-26.18269192192591", "28.26318813836189"},
         };
+        //test data retrieving
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("Landmarks").child("Entertainment").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Log.e("firebase", "Error getting data", task.getException());
+                } else {
+                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                    String landmarkEnt = String.valueOf(task.getResult().getValue());
+                    Log.d("firebase", landmarkEnt);
+
+                    /*arrEnt = new String[][]{
+                            landmarkEnt
+                    };*/
+                }
+            }
+        });
 
         arrFood=new String[][]{
                 {"Dingo's Pub & Restaurant","Shop 4, Lakedene Centre, Lakefield Ave, Benoni, Johannesburg, 1501","+27106150898","-26.17837695922995","28.285933290069632"},
@@ -444,25 +366,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Findroutes(new LatLng(GlobLocation.getLatitude(), GlobLocation.getLongitude()), new LatLng(markerLat, markerLong));
                 CalculationByDistance(new LatLng(GlobLocation.getLatitude(), GlobLocation.getLongitude()), new LatLng(markerLat, markerLong));
 
-
-                /*PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
-                try {
-                    startActivityForResult(builder.build(MapsActivity.this), PLACE_PICKER_REQUEST);
-                } catch (GooglePlayServicesRepairableException e) {
-                    Log.e(TAG, "onClick: GooglePlayServicesRepairableException: " + e.getMessage());
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    Log.e(TAG, "onClick: GooglePlayServicesNotAvailableException: " + e.getMessage());
-                }*/
-
-
-
-
-
-
-
-
-
             }
         });
 
@@ -537,14 +440,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
             }
-
-
-
-
-            /*@Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }*/
 
         });
 
@@ -686,9 +581,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(TAG, "geoLocate: found a location" + address.toString());
 
             moveCameraS(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, mPlace);
-            /*MarkerOptions options = new MarkerOptions().position(new LatLng(address.getLatitude(),address.getLongitude())).title(address.getAddressLine(0));
-            mMap.addMarker(options);*/
-
 
         }
 
@@ -711,13 +603,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Log.d(TAG, "onComplete: found location");
                             Location currentLocation = (Location) task.getResult();
                             GlobLocation=currentLocation;
-                           /* CameraPosition cameraPosition = CameraPosition.builder()
-                            .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
-                            .zoom(DEFAULT_ZOOM)
-                            .bearing(0)
-                            .tilt(0)
-                            .build();
-                            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
 
                             moveCameraU(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM, "My Location");
@@ -732,126 +617,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (SecurityException e) {
             Log.d(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
         }
-
-        //Log.d("firebase", mLandmarkType);
-
-        /*if( mLandmarkType == "Entertainment"){
-            for (int i = 0; i < arrEnt.length; i++) {
-                String snippet ="";
-                snippet = "Address: " + arrEnt[i][1] + "\n" +
-                        "Phone Number: " + arrEnt[i][2]; //
-                LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
-                MarkerOptions options = new MarkerOptions()
-                        .position(location)
-                        .title(arrEnt[i][0])
-                        .snippet(snippet);
-                mMarker = mMap.addMarker(options);
-
-            }
-        }
-
-        if( mLandmarkType == "Food") {
-            for (int i = 0; i < arrFood.length; i++) {
-                String snippet = "";
-                snippet = "Address: " + arrFood[i][1] + "\n" +
-                        "Phone Number: " + arrFood[i][2]; //
-                LatLng location = new LatLng(Double.valueOf(arrFood[i][3]), Double.valueOf(arrFood[i][4]));
-                MarkerOptions options = new MarkerOptions()
-                        .position(location)
-                        .title(arrFood[i][0])
-                        .snippet(snippet);
-                mMarker = mMap.addMarker(options);
-
-            }
-        }
-
-        if( mLandmarkType == "Sports") {
-            for (int i = 0; i < arrSports.length; i++) {
-                String snippet = "";
-                snippet = "Address: " + arrSports[i][1] + "\n" +
-                        "Phone Number: " + arrSports[i][2]; //
-                LatLng location = new LatLng(Double.valueOf(arrSports[i][3]), Double.valueOf(arrSports[i][4]));
-                MarkerOptions options = new MarkerOptions()
-                        .position(location)
-                        .title(arrSports[i][0])
-                        .snippet(snippet);
-                mMarker = mMap.addMarker(options);
-            }
-        }
-
-        if( mLandmarkType == "Historical") {
-            for (int i = 0; i < arrHis.length; i++) {
-                String snippet = "";
-                snippet = "Address: " + arrHis[i][1] + "\n" +
-                        "Phone Number: " + arrHis[i][2]; //
-                LatLng location = new LatLng(Double.valueOf(arrHis[i][3]), Double.valueOf(arrHis[i][4]));
-                MarkerOptions options = new MarkerOptions()
-                        .position(location)
-                        .title(arrHis[i][0])
-                        .snippet(snippet);
-                mMarker = mMap.addMarker(options);
-
-            }
-        }
-        else {
-            for (int i = 0; i < arrEnt.length; i++) {
-                String snippet ="";
-                snippet = "Address: " + arrEnt[i][1] + "\n" +
-                        "Phone Number: " + arrEnt[i][2]; //
-                LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
-                MarkerOptions options = new MarkerOptions()
-                        .position(location)
-                        .title(arrEnt[i][0])
-                        .snippet(snippet);
-                mMarker = mMap.addMarker(options);
-
-            }
-
-
-
-            for (int i = 0; i < arrFood.length; i++) {
-                String snippet = "";
-                snippet = "Address: " + arrFood[i][1] + "\n" +
-                        "Phone Number: " + arrFood[i][2]; //
-                LatLng location = new LatLng(Double.valueOf(arrFood[i][3]), Double.valueOf(arrFood[i][4]));
-                MarkerOptions options = new MarkerOptions()
-                        .position(location)
-                        .title(arrFood[i][0])
-                        .snippet(snippet);
-                mMarker = mMap.addMarker(options);
-
-            }
-
-
-
-            for (int i = 0; i < arrSports.length; i++) {
-                String snippet = "";
-                snippet = "Address: " + arrSports[i][1] + "\n" +
-                        "Phone Number: " + arrSports[i][2]; //
-                LatLng location = new LatLng(Double.valueOf(arrSports[i][3]), Double.valueOf(arrSports[i][4]));
-                MarkerOptions options = new MarkerOptions()
-                        .position(location)
-                        .title(arrSports[i][0])
-                        .snippet(snippet);
-                mMarker = mMap.addMarker(options);
-            }
-
-
-
-            for (int i = 0; i < arrHis.length; i++) {
-                String snippet = "";
-                snippet = "Address: " + arrHis[i][1] + "\n" +
-                        "Phone Number: " + arrHis[i][2]; //
-                LatLng location = new LatLng(Double.valueOf(arrHis[i][3]), Double.valueOf(arrHis[i][4]));
-                MarkerOptions options = new MarkerOptions()
-                        .position(location)
-                        .title(arrHis[i][0])
-                        .snippet(snippet);
-                mMarker = mMap.addMarker(options);
-
-            }
-        }*/
-       
 
     }
 
@@ -868,8 +633,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 String snippet = "Address: " + placeInfo.getAddress() + "\n" +
                         "Phone Number: " + placeInfo.getPhoneNumber() + "\n" +
-                        "Website: " + placeInfo.getWebsiteUri() + "\n" +
-                        "Price Rating: " + placeInfo.getRating() + "\n";
+                        "Website: " + placeInfo.getWebsiteUri() + "\n";
                 Log.d(TAG, "moveCamera: snippet" + snippet);
 
 
@@ -993,7 +757,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mPlace.setAddress(place.getAddress().toString());
                 mPlace.setId(place.getId());
                 mPlace.setLatlng(place.getLatLng());
-                mPlace.setRating(place.getRating());
                 mPlace.setWebsiteUri(place.getWebsiteUri());
 
                 Log.d(TAG, "onResult: place: " + mPlace.toString());
