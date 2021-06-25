@@ -59,9 +59,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
-                            Toast.makeText(MainActivity.this, "Logged in successfully, UserID: " + password, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Logged in successfully", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                            //intent.putExtra("UserID", String.valueOf(password));
                             startActivity(intent);
                         }
                         else{

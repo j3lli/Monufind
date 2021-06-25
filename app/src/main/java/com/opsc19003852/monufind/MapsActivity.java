@@ -100,6 +100,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mUserID = fAuth.getCurrentUser().getUid();
 
+        //test data retrieving
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("Landmarks").child("Entertainment").child("East Rand Mall").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Log.e("firebase", "Error getting data", task.getException());
+                } else {
+                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                    String landmark = String.valueOf(task.getResult().getValue());
+                    Log.d("firebase", landmark);
+                }
+            }
+        });
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("users").child(mUserID).child("landmark").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
