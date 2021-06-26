@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -18,6 +19,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.ConsoleMessage;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -51,7 +53,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.places.Places;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.opsc19003852.monufind.models.PlaceInfo;
 import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
@@ -63,6 +71,7 @@ import com.directions.route.RoutingListener;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -91,6 +100,85 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
             init();
         }
+
+
+        mUserID = fAuth.getCurrentUser().getUid();
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("users").child(mUserID).child("landmark").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Log.e("firebase", "Error getting data", task.getException());
+                }
+                else {
+                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                    mLandmarkType = String.valueOf(task.getResult().getValue());
+                    Log.d("firebase", mLandmarkType);
+
+                    if( mLandmarkType.equals("Entertainment")){
+                        for (int i = 0; i < arrEnt.length; i++) {
+                            String snippet ="";
+                            snippet = "Address: " + arrEnt[i][1] + "\n" +
+                                    "Phone Number: " + arrEnt[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrEnt[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+
+                        }
+                    }
+
+                    if( mLandmarkType.equals("Food")) {
+                        for (int i = 0; i < arrFood.length; i++) {
+                            String snippet = "";
+                            snippet = "Address: " + arrFood[i][1] + "\n" +
+                                    "Phone Number: " + arrFood[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrFood[i][3]), Double.valueOf(arrFood[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrFood[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+
+                        }
+                    }
+
+                    if( mLandmarkType.equals("Sports")) {
+                        for (int i = 0; i < arrSports.length; i++) {
+                            String snippet = "";
+                            snippet = "Address: " + arrSports[i][1] + "\n" +
+                                    "Phone Number: " + arrSports[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrSports[i][3]), Double.valueOf(arrSports[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrSports[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+                        }
+                    }
+
+                    if( mLandmarkType.equals("Historical")) {
+                        for (int i = 0; i < arrHis.length; i++) {
+                            String snippet = "";
+                            snippet = "Address: " + arrHis[i][1] + "\n" +
+                                    "Phone Number: " + arrHis[i][2]; //
+                            LatLng location = new LatLng(Double.valueOf(arrHis[i][3]), Double.valueOf(arrHis[i][4]));
+                            MarkerOptions options = new MarkerOptions()
+                                    .position(location)
+                                    .title(arrHis[i][0])
+                                    .snippet(snippet);
+                            mMarker = mMap.addMarker(options);
+
+                        }
+                    }
+
+                }
+            }
+        });
+
     }
 
 
@@ -117,18 +205,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient;
     private PlaceInfo mPlace;
     private Marker mMarker;
+    private String mLandmarkType;
     private String apiKey = "AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU";
+    String mUserID; //= getIntent().getStringExtra("UserID");
     private DatabaseReference mDatabase;
     Spinner mLandmark;
     Button mbtnLandmark;
     private Location GlobLocation;
     private double markerLat;
     private double markerLong;
+    private String landmarkEnt;
+
+
+
+    FirebaseAuth fAuth;
 
     private String[][] arrEnt;
     private String[][] arrFood;
     private String[][] arrHis;
     private String[][] arrSports;
+
+    private int commas;
 
     private List<Polyline> polylines=null;
 
@@ -144,24 +241,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mPlacePicker = (ImageView) findViewById(R.id.place_picker);
         mLandmark = findViewById(R.id.spnLandmark);
         mbtnLandmark = (Button) findViewById(R.id.btnLandmark);
-
-
-
-
-        /*
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("users").child("JMeV000HgkPcFwWJjsnoMT82QRb2").child("landmark").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                }
-                else {
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                }
-            }
-        });*/
-
+        fAuth = FirebaseAuth.getInstance();
 
         arrEnt = new String[][]{
                 {"Lakeside Mall", "18b Tom Jones St, Benoni, 1501", "+27114271801", "-26.18413410789464", "28.315627708697136"},
@@ -171,6 +251,77 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 {"Summer Place Boksburg", "Elizabeth Rd &, Leith Rd, Bartlett AH, Boksburg, 1472", "+27118943614", "-26.169666754154566", "28.275365454160436"},
                 {"Monte Cristp", "Beyers Park, Boksburg, 1459", "NA", "-26.18269192192591", "28.26318813836189"},
         };
+        //test data retrieving
+
+        //mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        /*DatabaseReference ref = mDatabase.child("Landmarks");
+
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot task : dataSnapshot.getChildren()){
+                    landmarkEnt = String.valueOf(task.getValue());
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled", databaseError.toException());
+            }
+        });*/
+
+        //for(int i = 0; i < landmarkEnt.length(); i++) {     if(landmarkEnt.charAt(i) == ',') commas++; };
+        //arrEnt = new String[commas][5];
+
+
+        /*mDatabase.child("Landmarks").child("Entertainment").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful()) {
+                    Log.e("firebase", "Error getting data", task.getException());
+                } else {
+                    landmarkEnt = String.valueOf(task.getResult().getValue());
+                    Log.d("firebase", landmarkEnt);
+
+                    commas = (commas+1)/7;
+                    Log.d("firebase", String.valueOf(commas));
+
+                }
+            }
+        });*/
+
+        //Log.d("firebase", landmarkEnt);
+        /*String str1 = landmarkEnt;
+
+        for(int i = 0; i< commas; i++){
+            int find = 0;
+            find = str1.indexOf("=");
+            Log.d( "firebase", str1.substring(1, find));
+            arrEnt[i][0] = str1.substring(1, find);
+            str1 = str1.replace(str1.substring(1, find + 1), "");
+            find = str1.indexOf("=");
+            str1 = str1.replace(str1.substring(0, find + 1), "");
+            find = str1.indexOf("=");
+            Log.d( "firebase", str1.substring(0, find - 7));
+            arrEnt[i][1] = str1.substring(0, find - 7);
+            str1 = str1.replace(str1.substring(0, find + 1), "");
+            find = str1.indexOf("=");
+            Log.d( "firebase", str1.substring(0, find - 6));
+            arrEnt[i][2] = str1.substring(0, find - 6);
+            str1 = str1.replace(str1.substring(0, find + 1), "");
+            find = str1.indexOf("=");
+            Log.d( "firebase", str1.substring(0, find - 5));
+            arrEnt[i][3] = str1.substring(0, find - 5);
+            str1 = str1.replace(str1.substring(0, find + 1), "");
+            find = str1.indexOf("}");
+            Log.d( "firebase", str1.substring(0, find));
+            arrEnt[i][4] = str1.substring(0, find);
+            str1 = str1.replace(str1.substring(0, find + 2), "");
+            Log.d( "firebase", Arrays.deepToString(arrEnt));
+        }*/
+
+        Log.d( "firebase", Arrays.deepToString(arrEnt) + "stuff");
 
         arrFood=new String[][]{
                 {"Dingo's Pub & Restaurant","Shop 4, Lakedene Centre, Lakefield Ave, Benoni, Johannesburg, 1501","+27106150898","-26.17837695922995","28.285933290069632"},
@@ -277,25 +428,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Findroutes(new LatLng(GlobLocation.getLatitude(), GlobLocation.getLongitude()), new LatLng(markerLat, markerLong));
                 CalculationByDistance(new LatLng(GlobLocation.getLatitude(), GlobLocation.getLongitude()), new LatLng(markerLat, markerLong));
 
-
-                /*PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
-                try {
-                    startActivityForResult(builder.build(MapsActivity.this), PLACE_PICKER_REQUEST);
-                } catch (GooglePlayServicesRepairableException e) {
-                    Log.e(TAG, "onClick: GooglePlayServicesRepairableException: " + e.getMessage());
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    Log.e(TAG, "onClick: GooglePlayServicesNotAvailableException: " + e.getMessage());
-                }*/
-
-
-
-
-
-
-
-
-
             }
         });
 
@@ -370,14 +502,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
             }
-
-
-
-
-            /*@Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }*/
 
         });
 
@@ -519,9 +643,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(TAG, "geoLocate: found a location" + address.toString());
 
             moveCameraS(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, mPlace);
-            /*MarkerOptions options = new MarkerOptions().position(new LatLng(address.getLatitude(),address.getLongitude())).title(address.getAddressLine(0));
-            mMap.addMarker(options);*/
-
 
         }
 
@@ -544,13 +665,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Log.d(TAG, "onComplete: found location");
                             Location currentLocation = (Location) task.getResult();
                             GlobLocation=currentLocation;
-                           /* CameraPosition cameraPosition = CameraPosition.builder()
-                            .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
-                            .zoom(DEFAULT_ZOOM)
-                            .bearing(0)
-                            .tilt(0)
-                            .build();
-                            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
 
                             moveCameraU(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM, "My Location");
@@ -565,48 +679,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (SecurityException e) {
             Log.d(TAG, "getDeviceLocation: SecurityException" + e.getMessage());
         }
-
-        for (int i = 0; i < arrEnt.length; i++) {
-            String snippet ="";
-            snippet = "Address: " + arrEnt[i][1] + "\n" +
-                    "Phone Number: " + arrEnt[i][2]; //
-            LatLng location = new LatLng(Double.valueOf(arrEnt[i][3]),Double.valueOf(arrEnt[i][4]));
-            MarkerOptions options = new MarkerOptions()
-                    .position(location)
-                    .title(arrEnt[i][0])
-                    .snippet(snippet);
-            mMarker = mMap.addMarker(options);
-
-        }
-
-        for (int i = 0; i < arrFood.length; i++) {
-            String snippet ="";
-            snippet = "Address: " + arrFood[i][1] + "\n" +
-                    "Phone Number: " + arrFood[i][2]; //
-            LatLng location = new LatLng(Double.valueOf(arrFood[i][3]),Double.valueOf(arrFood[i][4]));
-            MarkerOptions options = new MarkerOptions()
-                    .position(location)
-                    .title(arrFood[i][0])
-                    .snippet(snippet);
-            mMarker = mMap.addMarker(options);
-
-        }
-
-
-
-        for (int i = 0; i < arrSports.length; i++) {
-            String snippet ="";
-            snippet = "Address: " + arrSports[i][1] + "\n" +
-                    "Phone Number: " + arrSports[i][2]; //
-            LatLng location = new LatLng(Double.valueOf(arrSports[i][3]),Double.valueOf(arrSports[i][4]));
-            MarkerOptions options = new MarkerOptions()
-                    .position(location)
-                    .title(arrSports[i][0])
-                    .snippet(snippet);
-            mMarker = mMap.addMarker(options);
-        }
-
-       
 
     }
 
@@ -623,8 +695,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 String snippet = "Address: " + placeInfo.getAddress() + "\n" +
                         "Phone Number: " + placeInfo.getPhoneNumber() + "\n" +
-                        "Website: " + placeInfo.getWebsiteUri() + "\n" +
-                        "Price Rating: " + placeInfo.getRating() + "\n";
+                        "Website: " + placeInfo.getWebsiteUri() + "\n";
                 Log.d(TAG, "moveCamera: snippet" + snippet);
 
 
@@ -685,6 +756,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     LOCATION_PERMISSION_REQUEST_CODE);
 
         }
+
+        Log.d( "firebase", Arrays.deepToString(arrEnt) + "stuff");
     }
 
     @SuppressLint("MissingSuperCall")
@@ -748,7 +821,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mPlace.setAddress(place.getAddress().toString());
                 mPlace.setId(place.getId());
                 mPlace.setLatlng(place.getLatLng());
-                mPlace.setRating(place.getRating());
                 mPlace.setWebsiteUri(place.getWebsiteUri());
 
                 Log.d(TAG, "onResult: place: " + mPlace.toString());
