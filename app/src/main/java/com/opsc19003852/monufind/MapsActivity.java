@@ -55,8 +55,11 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.opsc19003852.monufind.models.PlaceInfo;
 import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
@@ -68,6 +71,7 @@ import com.directions.route.RoutingListener;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -210,6 +214,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location GlobLocation;
     private double markerLat;
     private double markerLong;
+    private String landmarkEnt;
+
+
 
     FirebaseAuth fAuth;
 
@@ -217,6 +224,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String[][] arrFood;
     private String[][] arrHis;
     private String[][] arrSports;
+
+    private int commas;
 
     private List<Polyline> polylines=null;
 
@@ -243,23 +252,76 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 {"Monte Cristp", "Beyers Park, Boksburg, 1459", "NA", "-26.18269192192591", "28.26318813836189"},
         };
         //test data retrieving
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("Landmarks").child("Entertainment").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+
+        //mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        /*DatabaseReference ref = mDatabase.child("Landmarks");
+
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot task : dataSnapshot.getChildren()){
+                    landmarkEnt = String.valueOf(task.getValue());
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled", databaseError.toException());
+            }
+        });*/
+
+        //for(int i = 0; i < landmarkEnt.length(); i++) {     if(landmarkEnt.charAt(i) == ',') commas++; };
+        //arrEnt = new String[commas][5];
+
+
+        /*mDatabase.child("Landmarks").child("Entertainment").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     Log.e("firebase", "Error getting data", task.getException());
                 } else {
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                    String landmarkEnt = String.valueOf(task.getResult().getValue());
+                    landmarkEnt = String.valueOf(task.getResult().getValue());
                     Log.d("firebase", landmarkEnt);
 
-                    /*arrEnt = new String[][]{
-                            landmarkEnt
-                    };*/
+                    commas = (commas+1)/7;
+                    Log.d("firebase", String.valueOf(commas));
+
                 }
             }
-        });
+        });*/
+
+        //Log.d("firebase", landmarkEnt);
+        /*String str1 = landmarkEnt;
+
+        for(int i = 0; i< commas; i++){
+            int find = 0;
+            find = str1.indexOf("=");
+            Log.d( "firebase", str1.substring(1, find));
+            arrEnt[i][0] = str1.substring(1, find);
+            str1 = str1.replace(str1.substring(1, find + 1), "");
+            find = str1.indexOf("=");
+            str1 = str1.replace(str1.substring(0, find + 1), "");
+            find = str1.indexOf("=");
+            Log.d( "firebase", str1.substring(0, find - 7));
+            arrEnt[i][1] = str1.substring(0, find - 7);
+            str1 = str1.replace(str1.substring(0, find + 1), "");
+            find = str1.indexOf("=");
+            Log.d( "firebase", str1.substring(0, find - 6));
+            arrEnt[i][2] = str1.substring(0, find - 6);
+            str1 = str1.replace(str1.substring(0, find + 1), "");
+            find = str1.indexOf("=");
+            Log.d( "firebase", str1.substring(0, find - 5));
+            arrEnt[i][3] = str1.substring(0, find - 5);
+            str1 = str1.replace(str1.substring(0, find + 1), "");
+            find = str1.indexOf("}");
+            Log.d( "firebase", str1.substring(0, find));
+            arrEnt[i][4] = str1.substring(0, find);
+            str1 = str1.replace(str1.substring(0, find + 2), "");
+            Log.d( "firebase", Arrays.deepToString(arrEnt));
+        }*/
+
+        Log.d( "firebase", Arrays.deepToString(arrEnt) + "stuff");
 
         arrFood=new String[][]{
                 {"Dingo's Pub & Restaurant","Shop 4, Lakedene Centre, Lakefield Ave, Benoni, Johannesburg, 1501","+27106150898","-26.17837695922995","28.285933290069632"},
@@ -694,6 +756,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     LOCATION_PERMISSION_REQUEST_CODE);
 
         }
+
+        Log.d( "firebase", Arrays.deepToString(arrEnt) + "stuff");
     }
 
     @SuppressLint("MissingSuperCall")
