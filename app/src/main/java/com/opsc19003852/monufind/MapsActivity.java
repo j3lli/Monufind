@@ -1,14 +1,17 @@
 package com.opsc19003852.monufind;
 
 import androidx.annotation.NonNull;
+import androidx.collection.ArraySet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -58,8 +61,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.opsc19003852.monufind.models.Landmarks;
 import com.opsc19003852.monufind.models.PlaceInfo;
 import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
@@ -76,6 +82,8 @@ import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener ,RoutingListener{
+
+    private Object postRef;
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -204,6 +212,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GoogleApiClient mGoogleApiClient;
     private PlaceInfo mPlace;
+    private Landmarks mlandmarks;
     private Marker mMarker;
     private String mLandmarkType;
     private String apiKey = "AIzaSyDWPY9SZbin4-1t-Xq3ZbwQPLGHJrN7kNU";
@@ -215,8 +224,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double markerLat;
     private double markerLong;
     private String landmarkEnt;
+    private SharedPreferences setKeys;
+    private SharedPreferences.Editor editKeys;
 
-
+    public void setGroup(String landmarkEnt){
+        this.landmarkEnt = landmarkEnt;
+    }
 
     FirebaseAuth fAuth;
 
@@ -228,8 +241,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int commas;
 
     private List<Polyline> polylines=null;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -251,78 +262,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 {"Summer Place Boksburg", "Elizabeth Rd &, Leith Rd, Bartlett AH, Boksburg, 1472", "+27118943614", "-26.169666754154566", "28.275365454160436"},
                 {"Monte Cristp", "Beyers Park, Boksburg, 1459", "NA", "-26.18269192192591", "28.26318813836189"},
         };
-        //test data retrieving
-
-        //mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        /*DatabaseReference ref = mDatabase.child("Landmarks");
-
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot task : dataSnapshot.getChildren()){
-                    landmarkEnt = String.valueOf(task.getValue());
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "onCancelled", databaseError.toException());
-            }
-        });*/
-
-        //for(int i = 0; i < landmarkEnt.length(); i++) {     if(landmarkEnt.charAt(i) == ',') commas++; };
-        //arrEnt = new String[commas][5];
-
-
-        /*mDatabase.child("Landmarks").child("Entertainment").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                } else {
-                    landmarkEnt = String.valueOf(task.getResult().getValue());
-                    Log.d("firebase", landmarkEnt);
-
-                    commas = (commas+1)/7;
-                    Log.d("firebase", String.valueOf(commas));
-
-                }
-            }
-        });*/
-
-        //Log.d("firebase", landmarkEnt);
-        /*String str1 = landmarkEnt;
-
-        for(int i = 0; i< commas; i++){
-            int find = 0;
-            find = str1.indexOf("=");
-            Log.d( "firebase", str1.substring(1, find));
-            arrEnt[i][0] = str1.substring(1, find);
-            str1 = str1.replace(str1.substring(1, find + 1), "");
-            find = str1.indexOf("=");
-            str1 = str1.replace(str1.substring(0, find + 1), "");
-            find = str1.indexOf("=");
-            Log.d( "firebase", str1.substring(0, find - 7));
-            arrEnt[i][1] = str1.substring(0, find - 7);
-            str1 = str1.replace(str1.substring(0, find + 1), "");
-            find = str1.indexOf("=");
-            Log.d( "firebase", str1.substring(0, find - 6));
-            arrEnt[i][2] = str1.substring(0, find - 6);
-            str1 = str1.replace(str1.substring(0, find + 1), "");
-            find = str1.indexOf("=");
-            Log.d( "firebase", str1.substring(0, find - 5));
-            arrEnt[i][3] = str1.substring(0, find - 5);
-            str1 = str1.replace(str1.substring(0, find + 1), "");
-            find = str1.indexOf("}");
-            Log.d( "firebase", str1.substring(0, find));
-            arrEnt[i][4] = str1.substring(0, find);
-            str1 = str1.replace(str1.substring(0, find + 2), "");
-            Log.d( "firebase", Arrays.deepToString(arrEnt));
-        }*/
-
-        Log.d( "firebase", Arrays.deepToString(arrEnt) + "stuff");
-
         arrFood=new String[][]{
                 {"Dingo's Pub & Restaurant","Shop 4, Lakedene Centre, Lakefield Ave, Benoni, Johannesburg, 1501","+27106150898","-26.17837695922995","28.285933290069632"},
                 {"Burger King Northmead (Drive-thru)","2 10th Ave, Northmead, Benoni, 1501","+27214175830","-26.169779741626378","28.32888929613805"},
